@@ -29,12 +29,16 @@
 <div class="container">
   <div class="row">
       {% for i in context %}
-          <div class="col-4">
-              <h6>name: {{ i.first_name }}</h6>
-              <h6>username: {{ i.username }}</h6>
-                <h6>Email: {{ i.email }}</h6>
-                <li class="btn btn-info btn-sm"><a style="color: black; text-decoration: none"  href="{% url 'ecomapp:approve_user' i.id %}">Details</a></li>
-<!--                <li><a class="btn btn-info btn-sm" href="{% url 'ecomapp:update_order' i.id %}">Update</a></li>-->
+          <div class="col-4 card "  style="width: 18rem;">
+              <h6>{{ i.first_name }}</h6>
+              <h6>{{ i.username }}</h6>
+                <h6>{{ i.email }}</h6>
+              <div class="row">
+                  <div class="col" ><a style="color: black; text-decoration: none" class="btn btn-info btn-sm"   href="{% url 'ecomapp:shop_delete' i.id %}">Delete</a></div>
+                  <div class="col"><a class="btn btn-sm btn-primary" style="color: black; text-decoration: none" href="{% url 'ecomapp:update_order' i.id %}">Update</a></div>
+              </div>
+<h1></h1>
+
        <div>
 <!--           <form method="post" action="">-->
 <!--               {% csrf_token %}-->

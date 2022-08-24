@@ -43,16 +43,14 @@ class CustomSignupForm(SignupForm):
 
 
 class UpdateForm(forms.ModelForm):
-    users = (
-        ('admin', 'admin'),
-        ('shopuser', 'shopuser'),
-        ('customer', 'customer')
-    )
-
-    full_name = forms.CharField(max_length=30, label='First Name')
+    # full_name = forms.CharField(max_length=30, label='first_name')
     # DOB = forms.DateField()
-    gender = forms.CharField(max_length=30, label='Gender')
-    usertype = forms.ChoiceField(choices=users)
+    gender = forms.CharField(max_length=30, label='gender',widget=forms.TextInput(attrs={"type": "text",
+                                                                                          "class": "form-control",
+                                                                                          "id": "inputgender",
+                                                                                          "placeholder": "gender"}))
+
+    # usertype = forms.ChoiceField(choices=users)
 
     # def save(self, request):
     #     # breakpoint()
@@ -66,18 +64,79 @@ class UpdateForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ['email', 'full_name', 'username', 'gender', 'password']
+        fields = ['email', 'first_name', 'username', 'gender']
+        widgets = {
+            'email': forms.TextInput(attrs={
+                "type": "email",
+                "class": "form-control",
+                "id": "inputEmail4",
+                "placeholder": "Email"
+            }),
+            'first_name': forms.TextInput(attrs={
+                "type": "text",
+                "class": "form-control",
+                "id": "inputFirstname",
+                "placeholder": "first name"
+            }),
+            'username': forms.TextInput(attrs={
+                "type": "text",
+                "class": "form-control",
+                "id": "inputusername",
+                "placeholder": "username"
+            }),
+            'gender': forms.TextInput(attrs={
+                "type": "text",
+                "class": "form-control",
+                "id": "inputgender",
+                "placeholder": "gender"
+            })
+        }
 
 
-class ShopUser(SignupForm):
-    shop_name = forms.CharField(max_length=40)
-    is_active = 'False'
-
-    # shop_email = forms.EmailField(max_length=40, blank=True)
+class CreatShopUser(forms.ModelForm):
+    gender = forms.CharField(max_length=30, label='gender', widget=forms.TextInput(attrs={"type": "text",
+                                                                                          "class": "form-control",
+                                                                                          "id": "inputgender",
+                                                                                          "placeholder": "gender"}))
 
     class Meta:
         model = User
-        fields = ['email', 'shop_name', 'password']
+        fields = ['email', 'first_name', 'username', 'gender']
+        widgets = {
+            'email': forms.TextInput(attrs={
+                "type": "email",
+                "class": "form-control",
+                "id": "inputEmail4",
+                "placeholder": "Email"
+            }),
+            'first_name': forms.TextInput(attrs={
+                "type": "text",
+                "class": "form-control",
+                "id": "inputFirstname",
+                "placeholder": "first name"
+            }),
+            'username': forms.TextInput(attrs={
+                "type": "text",
+                "class": "form-control",
+                "id": "inputusername",
+                "placeholder": "username"
+            }),
+            'gender': forms.TextInput(attrs={
+                "type": "text",
+                "class": "form-control",
+                "id": "inputgender",
+                "placeholder": "gender"
+            })
+        }
+# class ShopUser(SignupForm):
+#     shop_name = forms.CharField(max_length=40)
+#     is_active = 'False'
+#
+#     # shop_email = forms.EmailField(max_length=40, blank=True)
+#
+#     class Meta:
+#         model = User
+#         fields = ['email', 'shop_name', 'password']
 
 # from django import forms
 # from .models import Customuser

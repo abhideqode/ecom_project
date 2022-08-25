@@ -5,7 +5,7 @@ from allauth.account.utils import user_field
 from django import forms
 from allauth.account.adapter import get_adapter
 # from .utils import user_email, user_field, user_username
-from ecomapp.models import User
+from ecomapp.models import User, Product
 
 
 class CustomSignupForm(SignupForm):
@@ -32,7 +32,8 @@ class CustomSignupForm(SignupForm):
         user.user_type = self.cleaned_data['user_type']
         # user.DOB = self.clened_data['DOB']
         user.gender = self.cleaned_data['gender']
-        user.is_active = user.user_type == self.users[0][0]
+        print(self.users[2][0])
+        user.is_active = user.user_type == self.users[0][0] or user.user_type == self.users[2][0]
         user.save()
         print(user.__dict__)
         return user
@@ -45,7 +46,7 @@ class CustomSignupForm(SignupForm):
 class UpdateForm(forms.ModelForm):
     # full_name = forms.CharField(max_length=30, label='first_name')
     # DOB = forms.DateField()
-    gender = forms.CharField(max_length=30, label='gender',widget=forms.TextInput(attrs={"type": "text",
+    gender = forms.CharField(max_length=30, label='gender', widget=forms.TextInput(attrs={"type": "text",
                                                                                           "class": "form-control",
                                                                                           "id": "inputgender",
                                                                                           "placeholder": "gender"}))
@@ -128,31 +129,52 @@ class CreatShopUser(forms.ModelForm):
                 "placeholder": "gender"
             })
         }
-# class ShopUser(SignupForm):
-#     shop_name = forms.CharField(max_length=40)
-#     is_active = 'False'
-#
-#     # shop_email = forms.EmailField(max_length=40, blank=True)
-#
-#     class Meta:
-#         model = User
-#         fields = ['email', 'shop_name', 'password']
 
-# from django import forms
-# from .models import Customuser
-# class SignForm(forms.ModelForm):
 
-#     username = forms.CharField(
-#         max_length=30,
-#     )
+gender = (
+    ('male', 'male'),
+    ('female', 'female'))
 
-#     def myclean():
-#         pass
-#     def signup(self, request, user):
-#         """You signup function."""
 
-#     class Meta:
-#         model = Customuser
-#         fields = [
-#             'usertype'
-#         ]
+class Addproduct(forms.ModelForm):
+    class Meta:
+        model = Product
+        fields = ['product_type', 'product_name', 'description', 'product_size', 'price', 'gender', 'product_img']
+        # widgets = {
+        #     'product_type': forms.TextInput(attrs={
+        #         "type": "email",
+        #         "class": "form-control",
+        #         "id": "inputEmail4",
+        #         "placeholder": "product type"
+        #     }),
+        #     'product_name': forms.TextInput(attrs={
+        #         "type": "text",
+        #         "class": "form-control",
+        #         "id": "inputFirstname",
+        #         "placeholder": " name"
+        #     }),
+        #     'description': forms.TextInput(attrs={
+        #         "type": "text",
+        #         "class": "form-control",
+        #         "id": "inputusername",
+        #         "placeholder": "username"
+        #     }),
+        #     'product_size': forms.TextInput(attrs={
+        #         "type": "text",
+        #         "class": "form-control",
+        #         "id": "inputgender",
+        #         "placeholder": "size"
+        #     }),
+        #     'price': forms.TextInput(attrs={
+        #         "type": "text",
+        #         "class": "form-control",
+        #         "id": "inputgender",
+        #         "placeholder": "price"
+        #     }),
+        #     'gender': forms.TextInput(attrs={
+        #         "type": "text",
+        #         "class": "form-control",
+        #         "id": "inputgender",
+        #         "placeholder": "gender"
+        #     }, choices=gender)
+        # }

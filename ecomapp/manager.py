@@ -15,11 +15,18 @@ class CustomUserManager(BaseUserManager):
         return user
 
     def create_superuser(self, email, password=None, **extra_fields):
+        # import pdb;
+        # pdb.set_trace()
+        # user = self.model(email=email, **extra_fields)
+        # user.user_type = "admin"
+
         extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('user_type', 'admin')
         extra_fields.setdefault('is_active', True)
         extra_fields.setdefault('is_superuser', True)
+
         print('create_superuser')
-        return self.create_user(email, password, **extra_fields)
+        return self.create_user(email, password, **extra_fields,)
 
     def create_suser(self, email, password=None, **extra_fields):
         if not email:

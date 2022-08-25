@@ -27,6 +27,32 @@ class User(AbstractUser):
     shop_name = models.CharField(max_length=40, blank=True)
 
 
+
+sizes = (
+    ('S', 'S'),
+    ('M', 'M'),
+    ('L', 'L'),
+    ('XL', 'XL'),
+    ('XXL', 'XXL'),
+)
+gender = (
+    ('male', 'male'),
+    ('female', 'female'))
+
+
+class Product(models.Model):
+    product_type = models.CharField(max_length=40)
+    product_name = models.CharField(max_length=40)
+    description = models.CharField(max_length=100)
+    product_size = models.CharField(max_length=20, choices=sizes)
+    price = models.IntegerField()
+    product_img = models.ImageField(null=True,blank=True ,default='images/background.jpeg')
+    gender = models.CharField(max_length=10,choices=gender, blank=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True,null= True)
+
+
+
+
 @receiver(post_save, sender=User)
 def create_profile(sender, instance, created, **kwargs):
     print("hello in the signals")
@@ -43,9 +69,9 @@ def create_profile(sender, instance, created, **kwargs):
         # print(instance.__dict__)
         # print(instance.is_active)
         if not instance.is_active:
-
-            approveurl = "http://127.0.0.1:8000/ecomapprove/"+str(instance.id)+"/"
-            context = ({'id': instance.id, 'Username': instance.username, 'Firstname': instance.first_name, 'url':approveurl})
+            approveurl = "http://127.0.0.1:8000/ecomapprove/" + str(instance.id) + "/"
+            context = (
+                {'id': instance.id, 'Username': instance.username, 'Firstname': instance.first_name, 'url': approveurl})
             html_content = render_to_string('ecomapp/adminmail.html', context)
             text_content = strip_tags(html_content)
             admins

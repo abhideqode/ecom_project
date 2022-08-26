@@ -15,4 +15,5 @@ urlpatterns = [
     path('listproduct/', views.list_product, name="list_product"),
     path('deleteproduct/<str:pk>/', views.productdelete, name="delete_product"),
     path('dupdateproduct/<str:pk>/', views.updateproduct, name="update_product"),
+    # path('filter/', views.filter, name="filter_product"),
 ]

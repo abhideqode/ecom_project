@@ -4,51 +4,169 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js"
+            integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+            crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js"
+            integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+            crossorigin="anonymous"></script>
+
+
     <title>Document</title>
 </head>
 <body>
+<script type="text/javascript">
+    function myFunction(id)   {
+        console.log(id)
+   $.ajax(
+    {
+        type:"GET",
+        url: `/ecomupdate_order/${id}`,
+        success: function( data )
+        {
+           console.log(data)
+           $("#update-form").empty()
+           $("#update-form").append(data)
+           $('#update_id').val(id)
+        }
+     }
+     )
+    }
+    function myDelete(id)   {
+        console.log(id)
+   $.ajax(
+    {
+        type:"GET",
+        url: `/ecomdeleteshopuser/${id}/`,
+        success: function( data )
+        {
+           console.log(data)
+           $("#update-form").empty()
+           $("#update-form").append(data)
+           $('#update_id').val(id)
+        }
+     }
+     )
+    }
+<!--function myFunction(id)   {-->
+<!--        console.log(id)-->
+<!--        let myform = document.getElementById("update_form");-->
+
+<!--        var data = new FormData(myform)-->
+<!--        console.log(data);-->
+<!--        for (var key of data.entries()) {-->
+<!--        console.log(key[0] + ', ' + key[1]);-->
+<!--    }-->
+<!--    var id= $('#update_id').val()-->
+<!--    console.log(id)-->
+<!--     var token = '{{csrf_token}}';-->
+<!--   $.ajax(-->
+<!--    {-->
+<!--        type:"POST",-->
+<!--        processData: false,-->
+<!--        headers: { "X-CSRFToken": token },-->
+<!--        url: `/ecomupdate_order/${id}/`,-->
+<!--        data: $(myform).serialize(),-->
+<!--     }-->
+<!--     )-->
+<!--    }-->
+
+
+</script>
 <nav class="navbar navbar-expand-lg  navbar-dark bg-primary">
-  <a class="navbar-brand" href="#">Ecomerce</a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-<div class="collapse navbar-collapse" id="navbarNavDropdown">
+    <a class="navbar-brand" href="#">Ecomerce</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup"
+            aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNavDropdown">
         <ul class="navbar-nav">
-        {% if user.is_authenticated %}
-        <li class="nav-item active"><a class="nav-link" a href="{% url 'account_email' %}">Change E-mail</a></li>
-        <li class="nav-item"><a class="nav-link" href="{% url 'account_logout' %}">Sign Out</a></li>
-        {% else %}
-        <li class="nav-item" ><a class="nav-link" href="{% url 'account_login' %}">Sign In</a></li>
-        <li class="nav-item" ><a class="nav-link" href="{% url 'account_signup' %}">Sign Up</a></li>
-        {% endif %}
-      </ul>
-  </div>
+            {% if user.is_authenticated %}
+            <li class="nav-item active"><a class="nav-link" a href="{% url 'account_email' %}">Change E-mail</a></li>
+            <li class="nav-item"><a class="nav-link" href="{% url 'account_logout' %}">Sign Out</a></li>
+            {% else %}
+            <li class="nav-item"><a class="nav-link" href="{% url 'account_login' %}">Sign In</a></li>
+            <li class="nav-item"><a class="nav-link" href="{% url 'account_signup' %}">Sign Up</a></li>
+            {% endif %}
+        </ul>
+    </div>
 </nav>
 <div><h1></h1></div>
 <div class="container">
-  <div class="row">
-      {% for i in context %}
-          <div class="col-4 card "  style="width: 18rem;">
-              <h6>{{ i.first_name }}</h6>
-              <h6>{{ i.username }}</h6>
-                <h6>{{ i.email }}</h6>
-              <div class="row">
-                  <div class="col" ><a style="color: black; text-decoration: none" class="btn btn-info btn-sm"   href="{% url 'ecomapp:shop_delete' i.id %}">Delete</a></div>
-                  <div class="col"><a class="btn btn-sm btn-primary" style="color: black; text-decoration: none" href="{% url 'ecomapp:update_order' i.id %}">Update</a></div>
-              </div>
-<h1></h1>
+    <div class="row">
+        {% for i in context %}
+        <div class="col-4 card " style="width: 18rem;">
+            <h6>{{ i.first_name }}</h6>
+            <h6>{{ i.username }}</h6>
+            <h6>{{ i.email }}</h6>
+            <div class="row">
+                <div class="col"><a type="button" class="btn btn-danger" data-toggle="modal" data-target="#exampleModalLong1"
+                       href="#" class="likebutton1"  href="#" data-catid="{{ post.id }}" >
+                        delete
+                    </a></div>
+                <div class="col">
+                     <a type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalLong"
+                       href="#" class="likebutton" id="like{{post.id}}" href="#" data-catid="{{ post.id }}" onclick="myFunction('{{i.id}}')">
+                        update
+                    </a>
+                </div>
+            </div>
+            <h1></h1>
 
-       <div>
-<!--           <form method="post" action="">-->
-<!--               {% csrf_token %}-->
-<!--               <button type="submit" name="request" class="btn btn-link">Request List</button>-->
-<!--        </form>-->
-       </div>
-    </div>
+
+
+        </div>
         {% endfor %}
+    </div>
+    {{form.as_p}}
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="update-form">
+                    {% csrf_token %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="exampleModalLong1" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalCenterTitle">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+<!--          <form id="delete-item">-->
+<!--              <input value="{{ i.name }}">-->
+<!--              <button type="button" class="btn btn-primary" >Delete</button>-->
+<!--          </form>-->
+        Are you sure you want to delete ?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                  <button type="button" class="btn btn-primary" onclick= "myDelete('{{i.id}}')" >Delete</button>
+
+      </div>
+    </div>
   </div>
+</div>
 
 </div>
+
 </body>
 </html>

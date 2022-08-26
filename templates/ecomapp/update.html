@@ -11,25 +11,68 @@
     {% endblock %}
 </head>
 <body>
+
+<script>
+     function myFunction(id)   {
+        console.log(id)
+<!--        var data = {-->
+<!--            email: $('#inputEmail4').val(),-->
+<!--            firstname: $('#inputFirstname').val(),-->
+<!--            username: $('#inputusername').val(),-->
+<!--            gender: $('#inputgender').val(),-->
+<!--            id: $('#update_id').val(),-->
+<!--        }-->
+            let myform = document.getElementById("update_form");
+
+        var data = new FormData(myform)
+        console.log(data);
+<!--        data.append("email",$('#inputEmail4').val())-->
+<!--        data.append("first",$('#inputFirstname').val())-->
+<!--        data.append("user",$('#inputusername').val())-->
+<!--        data.append("gender",$('#inputgender').val())-->
+<!--        data.append("id",$('#update_id').val())-->
+
+        for (var key of data.entries()) {
+        console.log(key[0] + ', ' + key[1]);
+    }
+    var id= $('#update_id').val()
+    console.log(id)
+     var token = '{{csrf_token}}';
+   $.ajax(
+    {
+        type:"POST",
+        processData: false,
+        headers: { "X-CSRFToken": token },
+        url: `/ecomupdate_order/${id}/`,
+        data: $(myform).serialize(),
+<!--        success: function( data )-->
+<!--        {-->
+<!--           console.log(data)-->
+<!--           console.log(success)-->
+<!--        }-->
+     }
+     )
+    }
+</script>
 {% block body %}
-<nav class="navbar navbar-expand-lg  navbar-dark bg-primary">
-    <a class="navbar-brand" href="#">Ecomerce</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup"
-            aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNavDropdown">
-        <ul class="navbar-nav">
-            {% if user.is_authenticated %}
-            <li class="nav-item active"><a class="nav-link" a href="{% url 'account_email' %}">Change E-mail</a></li>
-            <li class="nav-item"><a class="nav-link" href="{% url 'account_logout' %}">Sign Out</a></li>
-            {% else %}
-            <li class="nav-item"><a class="nav-link" href="{% url 'account_login' %}">Sign In</a></li>
-            <li class="nav-item"><a class="nav-link" href="{% url 'account_signup' %}">Sign Up</a></li>
-            {% endif %}
-        </ul>
-    </div>
-</nav>
+<!--<nav class="navbar navbar-expand-lg  navbar-dark bg-primary">-->
+<!--    <a class="navbar-brand" href="#">Ecomerce</a>-->
+<!--    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup"-->
+<!--            aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">-->
+<!--        <span class="navbar-toggler-icon"></span>-->
+<!--    </button>-->
+<!--    <div class="collapse navbar-collapse" id="navbarNavDropdown">-->
+<!--        <ul class="navbar-nav">-->
+<!--            {% if user.is_authenticated %}-->
+<!--            <li class="nav-item active"><a class="nav-link" a href="{% url 'account_email' %}">Change E-mail</a></li>-->
+<!--            <li class="nav-item"><a class="nav-link" href="{% url 'account_logout' %}">Sign Out</a></li>-->
+<!--            {% else %}-->
+<!--            <li class="nav-item"><a class="nav-link" href="{% url 'account_login' %}">Sign In</a></li>-->
+<!--            <li class="nav-item"><a class="nav-link" href="{% url 'account_signup' %}">Sign Up</a></li>-->
+<!--            {% endif %}-->
+<!--        </ul>-->
+<!--    </div>-->
+<!--</nav>-->
 {% if messages %}
 <div>
     <strong>Messages:</strong>
@@ -46,8 +89,8 @@
         <div class="col">
         </div>
         <div class="alert alert-primary col-6">
-            <form method="post" action="">
-                {% csrf_token %}
+            <form method="post" action="" id="update_form">
+                     {% csrf_token %}
                 <div class="form-row">
                     <div class="form-group col-md">
                         <label>Email</label>
@@ -65,9 +108,13 @@
                         <label>Gender</label>
                         {{ form.gender}}
                     </div>
+                    <input  type="hidden" id="update_id" value={{form.id}}>
                 </div>
                 <h1></h1>
-                <button type="submit" class="btn btn-primary">Update</button>
+                <a type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalLong"
+                       href="#" class="likebutton" id="like{{post.id}}" href="#" data-catid="{{ post.id }}" onclick="myFunction('{{i.id}}')">
+                        update
+                    </a>
             </form>
         </div>
         <div class="col">

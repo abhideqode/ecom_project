@@ -12,7 +12,7 @@ from .form import UpdateForm, CustomSignupForm, CreatShopUser, Addproduct
 def test(request):
     current_user = request.user
     user = User.objects.get(username=current_user)
-    products  = Product.objects.all()
+    products = Product.objects.all()
     # print(user.__dict__)
     # import pdb;
     # pdb.set_trace()
@@ -22,33 +22,34 @@ def test(request):
     elif user.user_type == 'shopuser':
         return render(request, 'ecomapp/shopuser.html', {'t': current_user})
     elif user.user_type == 'customer':
-        return render(request, 'ecomapp/customer.html', {'t': current_user, 'products' : products})
+        return render(request, 'ecomapp/customer.html', {'t': current_user, 'products': products})
 
     print("current_user")
     print(current_user)
 
 
 def updateOrder(request, pk):
-    print(pk)
-    current_user = request.user
-    # print(current_user)
-    # order = Customuser.objects.get(id=pk)
-    # print(order)
     obj = get_object_or_404(User, id=pk)
-    print(obj)
     form = UpdateForm(request.POST or None, instance=obj)
-    # form = UpdateForm(instance=order)
+    context = {'form': form}
+    if request.method == 'GET':
+        return render(request, 'ecomapp/update.html', context)
+    elif request.method == "POST":
+        # print("hereeeee post", data)
+        # User.objects.filter(id=request.POST)
+        if form.is_valid():
+            print("sucess")
+            form.save()
+            # return HttpResponse('success')
+        return render(request, 'ecomapp/update.html', context)
+        # form = UpdateForm(instance=order)
     # print(form)
     # if request.method == 'POST':
     #     print("post")
     #     form = UpdateForm(request.POST, order)
-    if form.is_valid():
-        print("sucess")
-        form.save()
-        return HttpResponse('success')
-    context = {'form': form}
-    print("get")
-    return render(request, 'ecomapp/update.html', context)
+    #
+    # print("get")
+    # return render(request, 'ecomapp/update.html', context)
 
 
 def shopuser(request):
@@ -91,6 +92,7 @@ def shoplist(request):
     if c.user_type == 'admin':
         u = User.objects.filter(is_active=True)
         print(u)
+
         return render(request, 'ecomapp/shopuserlist.html', {'context': u})
     return HttpResponse("Login Required")
 
@@ -179,3 +181,7 @@ def updateproduct(request, pk):
     context = {'form': form}
     print("get")
     return render(request, 'ecomapp/product_update.html', context)
+
+
+# def filter(request):
+#     HttpResponse('sadsdds')

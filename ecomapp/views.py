@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import UpdateView
 
-from .models import User, Product
+from .models import User, Product, Wishlist, WishItems
 from .form import UpdateForm, CustomSignupForm, CreatShopUser, Addproduct
 
 
@@ -183,5 +183,32 @@ def updateproduct(request, pk):
     return render(request, 'ecomapp/product_update.html', context)
 
 
-# def filter(request):
-#     HttpResponse('sadsdds')
+def addtowishlist(request, pk):
+    print(pk)
+    # import pdb
+    # pdb.set_trace()
+    current_customer = request.user
+    print(current_customer.id)
+    wishlist = Wishlist.objects.get(user_id=current_customer.id)
+    products = Product.objects.get(id=pk)
+    print(products)
+    if WishItems.objects.filter(product_id=pk).exists():
+        return HttpResponse("Addedd")
+    else:
+        wishitem = WishItems(wishlist=wishlist,product=products)
+        wishitem.save()
+    print(wishitem)
+    return HttpResponse("Addedd")
+
+def go_to_wishlist(request):
+    current_user = request.user
+    user = User.objects.get(id=current_user.id)
+    data = user.wishlist.wishitems_set.all()
+    return render(request, 'ecomapp/wishlist.html', {'data':data})
+
+def remove_from_wishlist_function(request,pk):
+    print(pk)
+    print(WishItems)
+    WishItems.objects.filter(id=pk).delete()
+    print(WishItems)
+    return HttpResponse("Addedd")

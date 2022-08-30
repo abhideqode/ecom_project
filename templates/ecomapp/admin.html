@@ -42,22 +42,6 @@
 <h1></h1>
      <li class="btn btn-info"><a style="color: black; text-decoration: none" href="{% url 'ecomapp:shop_list' %}">ShopUsers</a></li>
      <li class="btn btn-info"><a style="color: black; text-decoration: none" href="{% url 'ecomapp:create_shop' %}">Create new Shopuser</a></li>
-
-
-
-<!--    <div>-->
-<!--      <strong>Menu:</strong>-->
-<!--      <ul>-->
-<!--        {% if user.is_authenticated %}-->
-<!--        <li><a href="{% url 'account_email' %}">Change E-mail</a></li>-->
-<!--        <li><a href="{% url 'account_logout' %}">Sign Out</a></li>-->
-<!--          <li><a href="{% url 'ecomapp:update_order' t.id %}">Update</a></li>-->
-<!--        {% else %}-->
-<!--        <li><a href="{% url 'account_login' %}">Sign In</a></li>-->
-<!--        <li><a href="{% url 'account_signup' %}">Sign Up</a></li>-->
-<!--        {% endif %}-->
-<!--      </ul>-->
-<!--    </div>-->
     {% block content %}
     {% endblock %}
     {% endblock %}

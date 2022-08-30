@@ -2,13 +2,13 @@
 {% block body %}
 
 <script type="text/javascript">
-     function add_to_wishlist_function(id)   {
-     document.getElementById(`addTwishlist_${id}`).innerText = 'Added';
+     function remove_from_wishlist_function(id){
+     document.getElementById(`removeTwishlist_${id}`).remove();
         console.log(id)
    $.ajax(
     {
         type:"GET",
-        url: `/ecomaddtowishlist/${id}/`,
+        url: `/ecomremovefromwishlist/${id}/`,
         success: function( data )
         {
            console.log(data)
@@ -20,7 +20,13 @@
      )
     }
 
+
+
+
+
+
 </script>
+
 <hr style="border-top:1px solid #000; clear:both;"/>
 <table id="table" class="table table-bordered">
     <thead class="alert-warning">
@@ -34,16 +40,17 @@
     </tr>
     </thead>
     <tbody>
-    {% for item in products %}
-    <tr>
-        <td>{{ item.product_type }}</td>
-        <td>{{ item.product_name }}</td>
-        <td>{{ item.product_size }}</td>
-        <td>{{ item.gender }}</td>
-        <td><img src="{{ item.product_img.url }}" height="200px" width="200px"></td>
+    {% for item in data %}
+
+    <tr id="removeTwishlist_{{item.id}}">
+        <td>{{ item.product.product_type }}</td>
+        <td>{{ item.product.product_name }}</td>
+        <td>{{ item.product.product_size }}</td>
+        <td>{{ item.product.gender }}</td>
+        <td><img src="{{ item.product.product_img.url }}" height="200px" width="200px"></td>
         <td><a type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalLong"
-               href="#" id="addTwishlist_{{item.id}}" onclick="add_to_wishlist_function('{{item.id}}')">
-            Add to Wishlist
+               href="#"  onclick="remove_from_wishlist_function('{{item.id}}')">
+            Remove from Wishlist
         </a></td>
     </tr>
     {% endfor %}

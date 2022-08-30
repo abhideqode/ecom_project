@@ -27,7 +27,6 @@ class User(AbstractUser):
     shop_name = models.CharField(max_length=40, blank=True)
 
 
-
 sizes = (
     ('S', 'S'),
     ('M', 'M'),
@@ -46,11 +45,20 @@ class Product(models.Model):
     description = models.CharField(max_length=100)
     product_size = models.CharField(max_length=20, choices=sizes)
     price = models.IntegerField()
-    product_img = models.ImageField(null=True,blank=True ,default='images/background.jpeg')
-    gender = models.CharField(max_length=10,choices=gender, blank=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True,null= True)
+    product_img = models.ImageField(null=True, blank=True, default='images/background.jpeg')
+    gender = models.CharField(max_length=10, choices=gender, blank=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
+    # wishlist = models.ForeignKey(Wishlist, on_delete=models.CASCADE, blank=True, null=True)
 
 
+class Wishlist(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    # product = models.ForeignKey(Product, on_delete=models.SET_NULL, blank=True, null=True)
+
+
+class WishItems(models.Model):
+    wishlist = models.ForeignKey(Wishlist, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, blank=True, null=True)
 
 
 @receiver(post_save, sender=User)
@@ -61,6 +69,10 @@ def create_profile(sender, instance, created, **kwargs):
         print("inside created")
         Admin_mails = []
         previous = User.objects.get(id=instance.id)
+        print(previous)
+        print("calling wishlist instance")
+        wishlist = Wishlist(user = previous)
+        wishlist.save()
         admins = User.objects.filter(user_type='admin').values()
         for i in range(0, len(admins)):
             Admin_mails.append(admins[i]['email'])

@@ -26,7 +26,6 @@ class User(AbstractUser):
     models.BooleanField(default=False)
     shop_name = models.CharField(max_length=40, blank=True)
 
-
 sizes = (
     ('S', 'S'),
     ('M', 'M'),
@@ -61,6 +60,15 @@ class WishItems(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, blank=True, null=True)
 
 
+class CartItems(models.Model):
+    wishlist = models.ForeignKey(Wishlist, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, blank=True, null=True)
+
+
+class MyOrders(models.Model):
+    quantity = models.IntegerField(blank=True,null=True)
+    cartitems = models.ForeignKey(CartItems, on_delete=models.CASCADE, blank=True, null=True)
+
 @receiver(post_save, sender=User)
 def create_profile(sender, instance, created, **kwargs):
     print("hello in the signals")
@@ -71,7 +79,7 @@ def create_profile(sender, instance, created, **kwargs):
         previous = User.objects.get(id=instance.id)
         print(previous)
         print("calling wishlist instance")
-        wishlist = Wishlist(user = previous)
+        wishlist = Wishlist(user=previous)
         wishlist.save()
         admins = User.objects.filter(user_type='admin').values()
         for i in range(0, len(admins)):

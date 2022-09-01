@@ -1,10 +1,13 @@
 from django.contrib.auth.decorators import login_required
+from django.db.models import Sum
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import UpdateView
 
-from .models import User, Product, Wishlist, WishItems
-from .form import UpdateForm, CustomSignupForm, CreatShopUser, Addproduct
+from .models import User, Product, Wishlist, WishItems, CartItems
+from .form import UpdateForm, CustomSignupForm, CreatShopUser, Addproduct, ShopSignupForm
+
+total = 0
 
 
 # Create your views here.
@@ -26,6 +29,15 @@ def test(request):
 
     print("current_user")
     print(current_user)
+
+
+def newshop_user(request):
+    form = ShopSignupForm(request.POST or None)
+    if form.is_valid():
+        form.save(request)
+        return render(request, 'account/account_inactive.html')
+    context = {'form': form}
+    return render(request, 'account/shop_user.html', context)
 
 
 def updateOrder(request, pk):
@@ -131,10 +143,10 @@ def addproduct(request):
             return HttpResponse('Saved')
     else:
         form = Addproduct()
-
     return render(request, 'ecomapp/addproduct.html', {'form': form})
 
 
+@login_required
 def list_product(request):
     current_user = request.user
     u = current_user.product_set.all()
@@ -160,9 +172,10 @@ def productdelete(request, pk):
     return HttpResponse('successfully deleted')
 
 
+@login_required
 def updateproduct(request, pk):
     print(pk)
-    current_user = request.user
+    # current_user = request.user
     # print(current_user)
     # order = Customuser.objects.get(id=pk)
     # print(order)
@@ -183,6 +196,7 @@ def updateproduct(request, pk):
     return render(request, 'ecomapp/product_update.html', context)
 
 
+@login_required
 def addtowishlist(request, pk):
     print(pk)
     # import pdb
@@ -195,20 +209,66 @@ def addtowishlist(request, pk):
     if WishItems.objects.filter(product_id=pk).exists():
         return HttpResponse("Addedd")
     else:
-        wishitem = WishItems(wishlist=wishlist,product=products)
+        wishitem = WishItems(wishlist=wishlist, product=products)
         wishitem.save()
     print(wishitem)
     return HttpResponse("Addedd")
 
-def go_to_wishlist(request):
-    current_user = request.user
-    user = User.objects.get(id=current_user.id)
-    data = user.wishlist.wishitems_set.all()
-    return render(request, 'ecomapp/wishlist.html', {'data':data})
 
-def remove_from_wishlist_function(request,pk):
+@login_required
+def addtocart(request, pk):
+    print(pk)
+    # import pdb
+    # pdb.set_trace()
+    current_customer = request.user
+    print(current_customer.id)
+    wishlist = Wishlist.objects.get(user_id=current_customer.id)
+    products = Product.objects.get(id=pk)
+    print(products)
+    if CartItems.objects.filter(product_id=pk).exists():
+        return HttpResponse("Addedd")
+    else:
+        cartitem = CartItems(wishlist=wishlist, product=products)
+        cartitem.save()
+    print(cartitem)
+    return HttpResponse("Addedd")
+
+
+@login_required
+def go_to_wishlist(request):
+    # Version 1
+    current_user = request.user
+    # user = User.objects.get(id=current_user.id)
+    data = current_user.wishlist.wishitems_set.all()
+    return render(request, 'ecomapp/wishlist.html', {'data': data})
+
+
+@login_required
+def go_to_cart(request):
+    current_user = request.user
+    # user = User.objects.get(id=current_user.id)
+    data = current_user.wishlist.cartitems_set.all()
+    product__price = CartItems.objects.filter(wishlist__user=current_user).aggregate(Sum('product__price'))
+    total = product__price['product__price__sum']
+    print(product__price['product__price__sum'])
+    return render(request, 'ecomapp/cartlist.html', {'data': data, 'product__price': total})
+
+
+def remove_from_wishlist_function(request, pk):
     print(pk)
     print(WishItems)
     WishItems.objects.filter(id=pk).delete()
     print(WishItems)
     return HttpResponse("Addedd")
+
+
+def remove_from_cart_function(request, pk):
+    print(pk)
+    print(CartItems)
+    CartItems.objects.filter(id=pk).delete()
+    print(CartItems)
+    return HttpResponse("Addedd")
+
+
+def add_to_my_orders(request):
+    pass

@@ -9,16 +9,8 @@ from ecomapp.models import User, Product
 
 
 class CustomSignupForm(SignupForm):
-    users = (
-        ('admin', 'admin'),
-        ('shopuser', 'shopuser'),
-        ('customer', 'customer')
-    )
-
     full_name = forms.CharField(max_length=30, label='First Name')
-    # DOB = forms.DateField()
     gender = forms.CharField(max_length=30, label='Gender')
-    user_type = forms.ChoiceField(choices=users)
     mob = forms.CharField(max_length=11)
 
     def save(self, request):
@@ -29,18 +21,43 @@ class CustomSignupForm(SignupForm):
 
         # user = super(CustomSignupForm, self).save(request)
         user.first_name = self.cleaned_data['full_name']
-        user.user_type = self.cleaned_data['user_type']
+        user.account_type = 1
         # user.DOB = self.clened_data['DOB']
         user.gender = self.cleaned_data['gender']
-        print(self.users[2][0])
-        user.is_active = user.user_type == self.users[0][0] or user.user_type == self.users[2][0]
+        user.user_type= 'customer'
+        user.is_active = True
         user.save()
         print(user.__dict__)
         return user
 
     class Meta:
         model = User
-        fields = ['email', 'full_name', 'user_type', 'username', 'gender', 'password']
+        fields = ['email', 'full_name', 'username', 'gender', 'password']
+
+
+class ShopSignupForm(SignupForm):
+    Brand = forms.CharField(max_length=30, label='Brand Name')
+    shop_name = forms.CharField(max_length=40, label='shop name')
+    mob = forms.CharField(max_length=11)
+
+    def save(self, request):
+        adapter = get_adapter(request)
+        user = adapter.new_user(request)
+        adapter.save_user(request, user, self, commit=False)
+        # user = super(CustomSignupForm, self).save(request)
+        user.Brand = self.cleaned_data['Brand']
+        # user.DOB = self.clened_data['DOB']
+        user.account_type = 1
+        user.shop_name = self.cleaned_data['shop_name']
+        user.user_type = 'shopuser'
+        user.is_active = False
+        user.save()
+        print(user.__dict__)
+        return user
+
+    class Meta:
+        model = User
+        fields = ['username','email', 'Brand', 'shop_name', 'password']
 
 
 class UpdateForm(forms.ModelForm):

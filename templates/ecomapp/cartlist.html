@@ -1,0 +1,145 @@
+{% extends 'ecomapp/base.html' %}
+{% block body %}
+
+<script type="text/javascript">
+
+    function myFunction(id)   {
+        console.log(id)
+   $.ajax(
+    {
+        type:"GET",
+        url: `/ecom/update_order/${id}`,
+        success: function( data )
+        {
+           console.log(data)
+           $("#update-form").empty()
+           $("#update-form").append(data)
+           $('#update_id').val(id)
+        }
+     }
+     )
+    }
+
+    function myBuyFunction()   {
+
+   $.ajax(
+    {
+        type:"GET",
+        url: `/ecom/gotocart/`,
+        success: function( data )
+        {
+           console.log(data)
+           $("#update-form").empty()
+           $("#update-form").append(data)
+           $('#update_id').val(id)
+        }
+     }
+     )
+    }
+
+
+     function remove_from_cart_function(id){
+        document.getElementById(`removeTwishlist_${id}`).remove();
+        console.log(id)
+   $.ajax(
+    {
+        type:"GET",
+        url: `/ecom/removefromcart/${id}/`,
+        success: function( data )
+        {
+           console.log(data)
+           $("#update-form").empty()
+           $("#update-form").append(data)
+           $('#update_id').val(id)
+           location.reload()
+        }
+     }
+     )
+    }
+
+
+</script>
+
+<hr style="border-top:1px solid #000; clear:both;"/>
+<table id="table" class="table table-bordered">
+    <thead class="alert-warning">
+    <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Size</th>
+        <th>Gender</th>
+        <th>Image</th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for item in data %}
+
+    <tr id="removeTwishlist_{{item.id}}">
+        <td>{{ item.product.product_type }}</td>
+        <td>{{ item.product.product_name }}</td>
+        <td>{{ item.product.product_size }}</td>
+        <td>{{ item.product.gender }}</td>
+        <td><img src="{{ item.product.product_img.url }}" height="200px" width="200px"></td>
+        <td><a type="button" class="btn btn-primary"
+               href="#" onclick="remove_from_cart_function('{{item.id}}')">
+            Remove from Cart
+        </a></td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+<div class="col">
+    <a type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalLong"
+       href="#" class="likebutton" id="like{{post.id}}" href="#" data-catid="{{ post.id }}"
+       onclick="myBuyFunction()">
+        Place Order
+    </a>
+</div>
+
+<div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Buy</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-bordered">
+                    <thead class="alert-warning">
+                    <tr>
+                        <th>Type</th>
+                        <th>Name</th>
+                        <th>Size</th>
+                        <th>Price</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for item in data %}
+
+                    <tr>
+                        <td>{{ item.product.product_name }}</td>
+                        <td>{{ item.product.product_size }}</td>
+                        <td>{{ item.product.gender }}</td>
+                        <td>{{ item.product.price }}</td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                <p>Total amount to be paid = <span style="color:blue">{{ product__price }}</span></p>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <a type="button" class="btn btn-primary"
+                         href="{% ur 'ecomapp:add_to_myorders'}" >
+                        Confirm Order
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

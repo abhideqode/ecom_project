@@ -3,7 +3,7 @@ from . import views
 
 app_name = 'ecomapp'
 urlpatterns = [
-    path('/dashboard/', views.test, name='ecomdash'),
+    path('dashboard/', views.test, name='ecomdash'),
     path('update_order/<str:pk>/', views.updateOrder, name="update_order"),
     path('shopregister/', views.shopuser, name="shop_user"),
     path('approve/<str:pk>/', views.shopuserApp, name="approve_user"),
@@ -19,4 +19,13 @@ urlpatterns = [
     path('gotowishlist/', views.go_to_wishlist, name="go_to_wishlist"),
     path('removefromwishlist/<str:pk>/', views.remove_from_wishlist_function, name="remove_from_wishlist_function"),
     # path('filter/', views.filter, name="filter_product"),
+
+    path('shop_user/', views.newshop_user, name="shopuser_url"),
+    path('addtocart/<str:pk>/', views.addtocart, name="add_to_cart"),
+    path('gotocart/', views.go_to_cart, name="go_to_cart"),
+    path('removefromcart/<str:pk>/', views.remove_from_cart_function, name="remove_from_wishlist_function"),
+
+    # Myorders fuctions
+    path('add_to_my_orders/', views.add_to_my_orders, name="add_to_myorders"),
+
 ]

@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import UpdateView
 
-from .models import User, Product, Wishlist, WishItems, CartItems
+from .models import User, Product, Wishlist, WishItems, CartItems, MyOrders
 from .form import UpdateForm, CustomSignupForm, CreatShopUser, Addproduct, ShopSignupForm
 
 total = 0
@@ -16,6 +16,7 @@ def test(request):
     current_user = request.user
     user = User.objects.get(username=current_user)
     products = Product.objects.all()
+    # variations = Variations.objects.all()
     # print(user.__dict__)
     # import pdb;
     # pdb.set_trace()
@@ -271,4 +272,15 @@ def remove_from_cart_function(request, pk):
 
 
 def add_to_my_orders(request):
-    pass
+    cartitems = CartItems.objects.filter(wishlist__user=request.user.id)
+    for items in cartitems:
+        myorder = MyOrders(quantity=3, product_type=items.product.product_type, product_name=items.product.product_name,
+                           product_size=items.product.product_size, price=items.product.price,
+                           product_img=items.product.product_img, gender=items.product.gender)
+        myorder.save()
+    return HttpResponse("Placed")
+
+def go_to_your_order(request):
+    myorder = MyOrders.objects.all()
+    return render(request, 'ecomapp/myorders_page.html', {'myorder': myorder})
+

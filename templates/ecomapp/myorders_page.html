@@ -1,0 +1,91 @@
+{% extends 'ecomapp/base.html' %}
+{% block body %}
+
+<script type="text/javascript">
+
+    function myFunction(id)   {
+        console.log(id)
+   $.ajax(
+    {
+        type:"GET",
+        url: `/ecom/update_order/${id}`,
+        success: function( data )
+        {
+           console.log(data)
+           $("#update-form").empty()
+           $("#update-form").append(data)
+           $('#update_id').val(id)
+        }
+     }
+     )
+    }
+
+    function myBuyFunction()   {
+
+   $.ajax(
+    {
+        type:"GET",
+        url: `/ecom/gotocart/`,
+        success: function( data )
+        {
+           console.log(data)
+           $("#update-form").empty()
+           $("#update-form").append(data)
+           $('#update_id').val(id)
+        }
+     }
+     )
+    }
+
+
+     function remove_from_cart_function(id){
+        document.getElementById(`removeTwishlist_${id}`).remove();
+        console.log(id)
+   $.ajax(
+    {
+        type:"GET",
+        url: `/ecom/removefromcart/${id}/`,
+        success: function( data )
+        {
+           console.log(data)
+           $("#update-form").empty()
+           $("#update-form").append(data)
+           $('#update_id').val(id)
+           location.reload()
+        }
+     }
+     )
+    }
+
+
+
+
+</script>
+
+<hr style="border-top:1px solid #000; clear:both;"/>
+
+<div class="d-flex justify-content-around">
+    {% for item in myorder %}
+    <div class="d-inline-flex p-2 bd-highlight">
+        <div class="card" style="width: 18rem;">
+            <img src="{{ item.product_img.url }}" height="200px" width="280px">
+            <div class="card-body">
+                <h6>Brand: {{ item.product_name }}</h6>
+                <h6>size: {{ item.product_size }}</h6>
+                <h6>gender: {{ item.gender }}</h6>
+                <h6>Price: {{ item.price }}</h6>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="col">
+    <a type="button" class="btn btn-primary"
+       href="#" class="likebutton">
+        Place Order
+    </a>
+</div>
+
+
+{% endblock %}

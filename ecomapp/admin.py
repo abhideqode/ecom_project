@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import User, Product, WishItems,Wishlist,CartItems,MyOrders
+from .models import User, Product, WishItems, Wishlist, CartItems, MyOrders,Variations
 
 
 class CustomAdmin(admin.ModelAdmin):
@@ -12,3 +12,4 @@ admin.site.register(Wishlist)
 admin.site.register(WishItems)
 admin.site.register(CartItems)
 admin.site.register(MyOrders)
+admin.site.register(Variations)

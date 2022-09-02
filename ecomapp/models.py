@@ -26,6 +26,7 @@ class User(AbstractUser):
     models.BooleanField(default=False)
     shop_name = models.CharField(max_length=40, blank=True)
 
+
 sizes = (
     ('S', 'S'),
     ('M', 'M'),
@@ -50,6 +51,21 @@ class Product(models.Model):
     # wishlist = models.ForeignKey(Wishlist, on_delete=models.CASCADE, blank=True, null=True)
 
 
+product_color = (
+    ("Red", "red"),
+    ("Black", "Black"),
+    ("Blue", "Blue"),
+    ("White", "White"),
+    ("Gray", "Gray"),
+)
+
+
+class Variations(models.Model):
+    product = models.ForeignKey(Product, blank=True, null=True, on_delete=models.CASCADE,related_name="product_variations")
+    quantity = models.PositiveIntegerField()
+    color = models.CharField(max_length=10,choices=product_color)
+
+
 class Wishlist(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     # product = models.ForeignKey(Product, on_delete=models.SET_NULL, blank=True, null=True)
@@ -61,13 +77,20 @@ class WishItems(models.Model):
 
 
 class CartItems(models.Model):
+    quantity = models.PositiveIntegerField(blank=True, null=True)
     wishlist = models.ForeignKey(Wishlist, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE, blank=True, null=True)
 
 
 class MyOrders(models.Model):
-    quantity = models.IntegerField(blank=True,null=True)
-    cartitems = models.ForeignKey(CartItems, on_delete=models.CASCADE, blank=True, null=True)
+    quantity = models.IntegerField(blank=True, null=True)
+    product_type = models.CharField(max_length=40, blank=True, null=True)
+    product_name = models.CharField(max_length=40, blank=True, null=True)
+    product_size = models.CharField(max_length=20, choices=sizes, blank=True, null=True)
+    price = models.IntegerField(blank=True, null=True)
+    product_img = models.ImageField(null=True, blank=True, default='images/background.jpeg')
+    gender = models.CharField(max_length=10, choices=gender, blank=True)
+
 
 @receiver(post_save, sender=User)
 def create_profile(sender, instance, created, **kwargs):

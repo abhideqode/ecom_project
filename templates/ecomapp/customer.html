@@ -1,6 +1,6 @@
 {% extends 'ecomapp/base.html' %}
 {% block body %}
-
+{% load productcolor_tags %}
 <script type="text/javascript">
      function add_to_wishlist_function(id)   {
      document.getElementById(`addTwishlist_${id}`).innerText = 'Added';
@@ -22,6 +22,7 @@
 
     function add_to_cart_function(id)   {
      document.getElementById(`addTocart_${id}`).innerText = 'Added';
+     var color = $(`#color_${id}`).val()
         console.log(id)
    $.ajax(
     {
@@ -37,6 +38,17 @@
      }
      )
     }
+    function changeColorFunc() {
+    var selectBox = document.getElementById("color");
+    console.log(selectBox)
+    var selectedValue = selectBox.options[selectBox.selectedIndex].value;
+    alert(selectedValue);
+    console.log(selectedValue)
+
+}
+
+
+
 
 </script>
 <hr style="border-top:1px solid #000; clear:both;"/>
@@ -46,8 +58,8 @@
         <th>Type</th>
         <th>Name</th>
         <th>Size</th>
-        <th>Gender</th>
         <th>Price</th>
+        <th>Color</th>
         <th>Image</th>
         <th></th>
     </tr>
@@ -58,19 +70,31 @@
         <td>{{ item.product_type }}</td>
         <td>{{ item.product_name }}</td>
         <td>{{ item.product_size }}</td>
-        <td>{{ item.gender }}</td>
         <td>{{ item.price }}</td>
+        <td>
+            <select name="cars" id="color_{{item.id}}" onchange="changeColorFunc();">
+                {% for i in item|product_feature:"color" %}
+                <option value="{{i}}" class="">{{i}}</option>
+                {% endfor %}
+            </select>
+        </td>
         <td><img src="{{ item.product_img.url }}" height="200px" width="200px"></td>
         <td>
-            <ul style="list-style-type: none;"><li style="margin: 12px;"><a type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalLong"
-                href="#" id="addTwishlist_{{item.id}}" onclick="add_to_wishlist_function('{{item.id}}')">
-             Add to Wishlist
-         </a></li>
-            <li style="margin: 12px;"><a type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalLong"
-                href="#" id="addTocart_{{item.id}}" onclick="add_to_cart_function('{{item.id}}')">
-             Add to Cart
-         </a></li></ul>
-    </td>
+            <ul style="list-style-type: none;">
+                <li style="margin: 12px;"><a type="button" class="btn btn-primary" data-toggle="modal"
+                                             data-target="#exampleModalLong"
+                                             href="#" id="addTwishlist_{{item.id}}"
+                                             onclick="add_to_wishlist_function('{{item.id}}')">
+                    Add to Wishlist
+                </a></li>
+                <li style="margin: 12px;"><a type="button" class="btn btn-primary" data-toggle="modal"
+                                             data-target="#exampleModalLong"
+                                             href="#" id="addTocart_{{item.id}}"
+                                             onclick="add_to_cart_function('{{item.id}}')">
+                    Add to Cart
+                </a></li>
+            </ul>
+        </td>
     </tr>
     {% endfor %}
     </tbody>

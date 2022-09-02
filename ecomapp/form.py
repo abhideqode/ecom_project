@@ -5,7 +5,7 @@ from allauth.account.utils import user_field
 from django import forms
 from allauth.account.adapter import get_adapter
 # from .utils import user_email, user_field, user_username
-from ecomapp.models import User, Product
+from ecomapp.models import User, Product, CartItems
 
 
 class CustomSignupForm(SignupForm):
@@ -157,41 +157,9 @@ class Addproduct(forms.ModelForm):
     class Meta:
         model = Product
         fields = ['product_type', 'product_name', 'description', 'product_size', 'price', 'gender', 'product_img']
-        # widgets = {
-        #     'product_type': forms.TextInput(attrs={
-        #         "type": "email",
-        #         "class": "form-control",
-        #         "id": "inputEmail4",
-        #         "placeholder": "product type"
-        #     }),
-        #     'product_name': forms.TextInput(attrs={
-        #         "type": "text",
-        #         "class": "form-control",
-        #         "id": "inputFirstname",
-        #         "placeholder": " name"
-        #     }),
-        #     'description': forms.TextInput(attrs={
-        #         "type": "text",
-        #         "class": "form-control",
-        #         "id": "inputusername",
-        #         "placeholder": "username"
-        #     }),
-        #     'product_size': forms.TextInput(attrs={
-        #         "type": "text",
-        #         "class": "form-control",
-        #         "id": "inputgender",
-        #         "placeholder": "size"
-        #     }),
-        #     'price': forms.TextInput(attrs={
-        #         "type": "text",
-        #         "class": "form-control",
-        #         "id": "inputgender",
-        #         "placeholder": "price"
-        #     }),
-        #     'gender': forms.TextInput(attrs={
-        #         "type": "text",
-        #         "class": "form-control",
-        #         "id": "inputgender",
-        #         "placeholder": "gender"
-        #     }, choices=gender)
-        # }
+
+
+class AddToCartDetails(forms.ModelForm):
+    class Meta:
+        model = CartItems
+        fields = ['quantity']

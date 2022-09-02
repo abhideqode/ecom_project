@@ -57,6 +57,26 @@
      )
     }
 
+    function OrderplacedFunction(){
+        document.getElementById(`addToorder`).innerText = 'Order PLaced';
+
+   $.ajax(
+    {
+        type:"GET",
+        url: `/ecom/add_to_my_orders/`,
+        success: function( data )
+        {
+           console.log(data)
+           $("#update-form").empty()
+           $("#update-form").append(data)
+           $('#update_id').val(id)
+           location.reload()
+        }
+     }
+     )
+    }
+
+
 
 </script>
 
@@ -119,7 +139,6 @@
                     </thead>
                     <tbody>
                     {% for item in data %}
-
                     <tr>
                         <td>{{ item.product.product_name }}</td>
                         <td>{{ item.product.product_size }}</td>
@@ -133,8 +152,9 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
                     <a type="button" class="btn btn-primary"
-                         href="{% ur 'ecomapp:add_to_myorders'}" >
-                        Confirm Order
+                       href="#" class="likebutton" id="addToorder"  data-catid="{{ post.id }}"
+                       onclick="OrderplacedFunction()">
+                        Confirm
                     </a>
                 </div>
             </div>

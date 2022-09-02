@@ -27,5 +27,6 @@ urlpatterns = [
 
     # Myorders fuctions
     path('add_to_my_orders/', views.add_to_my_orders, name="add_to_myorders"),
+path('go_to_your_order/', views.go_to_your_order, name="go_to_your_order"),
 
 ]

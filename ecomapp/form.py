@@ -5,13 +5,14 @@ from allauth.account.utils import user_field
 from django import forms
 from allauth.account.adapter import get_adapter
 # from .utils import user_email, user_field, user_username
-from ecomapp.models import User, Product, CartItems
+from ecomapp.models import User, Product, CartItems, Variations
 
 
 class CustomSignupForm(SignupForm):
     full_name = forms.CharField(max_length=30, label='First Name')
     gender = forms.CharField(max_length=30, label='Gender')
-    mob = forms.CharField(max_length=11)
+    mobile = forms.CharField(max_length=11)
+    Address = forms.CharField(max_length=50)
 
     def save(self, request):
         # breakpoint()
@@ -24,7 +25,9 @@ class CustomSignupForm(SignupForm):
         user.account_type = 1
         # user.DOB = self.clened_data['DOB']
         user.gender = self.cleaned_data['gender']
-        user.user_type= 'customer'
+        user.mobile_no = self.cleaned_data['mobile']
+        user.addressof_customer = self.cleaned_data['Address']
+        user.user_type = 'customer'
         user.is_active = True
         user.save()
         print(user.__dict__)
@@ -32,7 +35,7 @@ class CustomSignupForm(SignupForm):
 
     class Meta:
         model = User
-        fields = ['email', 'full_name', 'username', 'gender', 'password']
+        fields = ['email', 'full_name', 'username', 'gender', 'password', 'mobile_no', 'addressof_customer']
 
 
 class ShopSignupForm(SignupForm):
@@ -57,7 +60,7 @@ class ShopSignupForm(SignupForm):
 
     class Meta:
         model = User
-        fields = ['username','email', 'Brand', 'shop_name', 'password']
+        fields = ['username', 'email', 'Brand', 'shop_name', 'password']
 
 
 class UpdateForm(forms.ModelForm):
@@ -156,10 +159,11 @@ gender = (
 class Addproduct(forms.ModelForm):
     class Meta:
         model = Product
-        fields = ['product_type', 'product_name', 'description', 'product_size', 'price', 'gender', 'product_img']
+        fields = ['product_type', 'product_name', 'description', 'gender', 'price', 'product_img']
 
 
-class AddToCartDetails(forms.ModelForm):
+class FinalAddress(forms.ModelForm):
+
     class Meta:
-        model = CartItems
-        fields = ['quantity']
+        model = User
+        fields = ['mobile_no', 'addressof_customer']

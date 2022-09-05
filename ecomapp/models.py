@@ -1,3 +1,4 @@
+from urllib import request
 from django.core.mail import send_mail, EmailMultiAlternatives
 from django.db import models
 from django.contrib.auth.models import AbstractUser
@@ -21,8 +22,10 @@ users = (
 class User(AbstractUser):
     user_type = models.CharField(max_length=20, choices=users, blank=True)
     gender = models.CharField(max_length=30, blank=True)
-    mob = models.CharField(max_length=11, blank=True, null=True)
+    # mob = models.CharField(max_length=11, blank=True, null=True)
     objects = CustomUserManager()
+    mobile_no = models.CharField(max_length=11, blank=True, null=True)
+    addressof_customer = models.CharField(max_length=50, blank=True, null=True)
     models.BooleanField(default=False)
     shop_name = models.CharField(max_length=40, blank=True)
 
@@ -34,20 +37,22 @@ sizes = (
     ('XL', 'XL'),
     ('XXL', 'XXL'),
 )
+
 gender = (
     ('male', 'male'),
-    ('female', 'female'))
+    ('female', 'female')
+)
 
 
 class Product(models.Model):
     product_type = models.CharField(max_length=40)
     product_name = models.CharField(max_length=40)
     description = models.CharField(max_length=100)
-    product_size = models.CharField(max_length=20, choices=sizes)
-    price = models.IntegerField()
+    price = models.PositiveIntegerField()
     product_img = models.ImageField(null=True, blank=True, default='images/background.jpeg')
-    gender = models.CharField(max_length=10, choices=gender, blank=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
+    gender = models.CharField(max_length=10, choices=gender, blank=True, null=True)
+    quantity = models.PositiveIntegerField(blank=True,null=True)
     # wishlist = models.ForeignKey(Wishlist, on_delete=models.CASCADE, blank=True, null=True)
 
 
@@ -59,11 +64,26 @@ product_color = (
     ("Gray", "Gray"),
 )
 
+quantity = (
+    ('1', '1'),
+    ('2', '2'),
+    ('3', '3'),
+    ('4', '4'),
+    ('5', '5'),
+    ('6', '6'),
+    ('7', '7'),
+    ('8', '8'),
+    ('9', '9'),
+    ('10', '10'),
+)
+
 
 class Variations(models.Model):
-    product = models.ForeignKey(Product, blank=True, null=True, on_delete=models.CASCADE,related_name="product_variations")
-    quantity = models.PositiveIntegerField()
-    color = models.CharField(max_length=10,choices=product_color)
+    product = models.ForeignKey(Product, blank=True, null=True, on_delete=models.CASCADE,
+                                   related_name="product_variations")
+    # quantity = models.CharField(max_length=10,choices=quantity)
+    color = models.CharField(max_length=10, choices=product_color)
+    size = models.CharField(max_length=20, choices=sizes, blank=True, null=True)
 
 
 class Wishlist(models.Model):
@@ -79,17 +99,34 @@ class WishItems(models.Model):
 class CartItems(models.Model):
     quantity = models.PositiveIntegerField(blank=True, null=True)
     wishlist = models.ForeignKey(Wishlist, on_delete=models.CASCADE)
+    color = models.CharField(max_length=10, blank=True, null=True)
+    size = models.CharField(max_length=10, blank=True, null=True)
     product = models.ForeignKey(Product, on_delete=models.CASCADE, blank=True, null=True)
+    quantity = models.PositiveIntegerField(blank=True,null=True)
 
 
 class MyOrders(models.Model):
-    quantity = models.IntegerField(blank=True, null=True)
+    wishlist = models.ForeignKey(Wishlist, on_delete=models.CASCADE, blank=True, null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
+    product_id = models.CharField(max_length=10, blank=True, null=True)
+    quantity = models.IntegerField(default='0', blank=True, null=True)
     product_type = models.CharField(max_length=40, blank=True, null=True)
     product_name = models.CharField(max_length=40, blank=True, null=True)
-    product_size = models.CharField(max_length=20, choices=sizes, blank=True, null=True)
+    size = models.CharField(max_length=20, choices=sizes, blank=True, null=True)
+    color = models.CharField(max_length=10, choices=product_color, blank=True, null=True)
     price = models.IntegerField(blank=True, null=True)
     product_img = models.ImageField(null=True, blank=True, default='images/background.jpeg')
     gender = models.CharField(max_length=10, choices=gender, blank=True)
+
+
+# class OrderPlaced(models.Model):
+#     wishlist = models.ForeignKey(Wishlist, on_delete=models.CASCADE,blank=True,null=True)
+#     product_id = models.CharField(max_length=10,blank=True,null=True)
+#     quantity = models.IntegerField(default='0',blank=True, null=True)
+#     size = models.CharField(max_length=20, choices=sizes, blank=True, null=True)
+#     color = models.CharField(max_length=10,choices=product_color,blank=True,null=True)
+#     price = models.IntegerField(blank=True, null=True)
+#     user = models.ForeignKey(User, on_delete=models.CASCADE,blank=True,null=True)
 
 
 @receiver(post_save, sender=User)

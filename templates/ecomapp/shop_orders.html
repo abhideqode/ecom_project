@@ -59,12 +59,13 @@
     <tr>
         <th>Type</th>
         <th>Name</th>
-        <!-- <th>Quantity</th> -->
+        <th>Customer Name</th>
         <th>Size</th>
-        <th>Price</th>
         <th>Color</th>
+        <th>Quantity</th>
+        <th>Price</th>
         <th>Image</th>
-        <th></th>
+
     </tr>
     </thead>
     <tbody>
@@ -72,37 +73,16 @@
     <tr>
         <td>{{ item.product_type }}</td>
         <td>{{ item.product_name }}</td>
-        <td>  <select name="size" id="size_{{item.id}}" onchange="changeColorFunc();">
-            {% for i in item|product_feature:"size" %}
-            <option value="{{i}}" class="">{{i}}</option>
-            {% endfor %}
-            </select>
+        <td>{{ item.wishlist.user.first_name}}<br>
+            {{ item.wishlist.user.email}}<br>
+            {{ item.wishlist.user.addressof_customer}}<br>
+            {{ item.wishlist.user.mobile_no}}
         </td>
+        <td>{{item.size}}</td>
+        <td>{{item.color}}</td>
+        <td> {{ item.quantity }} </td>
         <td>{{ item.price }}</td>
-        <td>
-            <select name="cars" id="color_{{item.id}}" onchange="changeColorFunc();">
-                {% for i in item|product_feature:"color" %}
-                <option value="{{i}}" class="">{{i}}</option>
-                {% endfor %}
-            </select>
-        </td>
         <td><img src="{{ item.product_img.url }}" height="200px" width="200px"></td>
-        <td>
-            <ul style="list-style-type: none;">
-                <li style="margin: 12px;"><a type="button" class="btn btn-primary" data-toggle="modal"
-                                             data-target="#exampleModalLong"
-                                             href="#" id="addTwishlist_{{item.id}}"
-                                             onclick="add_to_wishlist_function('{{item.id}}')">
-                    Add to Wishlist
-                </a></li>
-                <li style="margin: 12px;"><a type="button" class="btn btn-primary" data-toggle="modal"
-                                             data-target="#exampleModalLong"
-                                             href="#" id="addTocart_{{item.id}}"
-                                             onclick="add_to_cart_function('{{item.id}}')">
-                    Add to Cart
-                </a></li>
-            </ul>
-        </td>
     </tr>
     {% endfor %}
     </tbody>

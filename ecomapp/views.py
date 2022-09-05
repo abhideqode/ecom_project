@@ -5,7 +5,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import UpdateView
 
 from .models import User, Product, Wishlist, WishItems, CartItems, MyOrders
-from .form import UpdateForm, CustomSignupForm, CreatShopUser, Addproduct, ShopSignupForm
+from .form import UpdateForm, CustomSignupForm, CreatShopUser, Addproduct, ShopSignupForm, FinalAddress
 
 total = 0
 
@@ -24,7 +24,11 @@ def test(request):
         print("called!")
         return render(request, 'ecomapp/admin.html', {'t': current_user})
     elif user.user_type == 'shopuser':
-        return render(request, 'ecomapp/shopuser.html', {'t': current_user})
+        total_shell_product = current_user.product_set.all().aggregate(Sum('quantity'))
+        total_order_recieved = MyOrders.objects.filter(user_id=current_user.id).aggregate(Sum('quantity'))
+        total_product_sell = (total_order_recieved['quantity__sum'] / total_shell_product['quantity__sum']) * 100
+        print(total_product_sell)
+        return render(request, 'ecomapp/shopuser.html', {'t': current_user, 'total_product_sell': total_product_sell})
     elif user.user_type == 'customer':
         return render(request, 'ecomapp/customer.html', {'t': current_user, 'products': products})
 
@@ -43,8 +47,10 @@ def newshop_user(request):
 
 def updateOrder(request, pk):
     obj = get_object_or_404(User, id=pk)
+    print(obj)
     form = UpdateForm(request.POST or None, instance=obj)
     context = {'form': form}
+    print(context)
     if request.method == 'GET':
         return render(request, 'ecomapp/update.html', context)
     elif request.method == "POST":
@@ -103,9 +109,7 @@ def requestlist(request):
 def shoplist(request):
     c = request.user
     if c.user_type == 'admin':
-        u = User.objects.filter(is_active=True)
-        print(u)
-
+        u = User.objects.filter(is_active=True, user_type='shopuser')
         return render(request, 'ecomapp/shopuserlist.html', {'context': u})
     return HttpResponse("Login Required")
 
@@ -150,9 +154,8 @@ def addproduct(request):
 @login_required
 def list_product(request):
     current_user = request.user
-    u = current_user.product_set.all()
-    print(u)
-    return render(request, 'ecomapp/product_list.html', {'context': u})
+    user_product = current_user.product_set.all()
+    return render(request, 'ecomapp/product_list.html', {'context': user_product})
 
 
 def shopdelete(request, pk):
@@ -217,20 +220,23 @@ def addtowishlist(request, pk):
 
 
 @login_required
-def addtocart(request, pk):
+def addtocart(request, pk, size, color):
     print(pk)
-    # import pdb
-    # pdb.set_trace()
+    print(size)
+    print(color)
     current_customer = request.user
     print(current_customer.id)
     wishlist = Wishlist.objects.get(user_id=current_customer.id)
+    print(CartItems.objects.filter(wishlist_id=wishlist.id).exists())
     products = Product.objects.get(id=pk)
     print(products)
-    if CartItems.objects.filter(product_id=pk).exists():
-        return HttpResponse("Addedd")
-    else:
-        cartitem = CartItems(wishlist=wishlist, product=products)
-        cartitem.save()
+    # if CartItems.objects.filter(wishlist_id=wishlist.id).exists() and CartItems.objects.filter(product_id=pk).exists():
+    #     print("Items if")
+    #     CartItems.objects.filter(product_id=pk).update(color=color,size=size)
+    #     return HttpResponse("Addedd")
+    # else:
+    cartitem = CartItems(wishlist=wishlist, product=products, color=color, size=size)
+    cartitem.save()
     print(cartitem)
     return HttpResponse("Addedd")
 
@@ -248,6 +254,7 @@ def go_to_wishlist(request):
 def go_to_cart(request):
     current_user = request.user
     # user = User.objects.get(id=current_user.id)
+    print(current_user)
     data = current_user.wishlist.cartitems_set.all()
     product__price = CartItems.objects.filter(wishlist__user=current_user).aggregate(Sum('product__price'))
     total = product__price['product__price__sum']
@@ -272,15 +279,73 @@ def remove_from_cart_function(request, pk):
 
 
 def add_to_my_orders(request):
+    current_customer = request.user
+    wishlist = Wishlist.objects.get(user_id=current_customer.id)
     cartitems = CartItems.objects.filter(wishlist__user=request.user.id)
     for items in cartitems:
-        myorder = MyOrders(quantity=3, product_type=items.product.product_type, product_name=items.product.product_name,
-                           product_size=items.product.product_size, price=items.product.price,
+        user = Product.objects.get(id=items.product_id).user
+        print(user)
+        myorder = MyOrders(wishlist=wishlist, quantity=items.quantity, user=user, product_id=items.product_id,
+                           product_type=items.product.product_type, product_name=items.product.product_name,
+                           price=items.product.price, size=items.size, color=items.color,
                            product_img=items.product.product_img, gender=items.product.gender)
         myorder.save()
+    CartItems.objects.all().delete()
     return HttpResponse("Placed")
 
+
 def go_to_your_order(request):
-    myorder = MyOrders.objects.all()
+    current_user = request.user
+    myorder = current_user.wishlist.myorders_set.all()
     return render(request, 'ecomapp/myorders_page.html', {'myorder': myorder})
 
+
+def remove_from_order(request, pk):
+    # myorder = MyOrders.objects.get(id=id)
+    MyOrders.objects.filter(id=pk).delete()
+    return HttpResponse("Removed")
+
+
+def update_order_quantity(request, pk, quantity):
+    # myorder = MyOrders.objects.get(id=id)
+    # MyOrders.objects.filter(id=pk).delete()
+    CartItems.objects.filter(id=pk).update(quantity=quantity)
+    # update.save()
+    return HttpResponse("Updated")
+
+
+def shop_orders(request):
+    current_shop = request.user
+    print(current_shop.id)
+    products = MyOrders.objects.filter(user_id=current_shop.id)
+    print(products)
+    # print(products[0].wishlist.user.username)
+    return render(request, 'ecomapp/shop_orders.html', {'products': products})
+
+
+def final_address(request):
+    current_user = request.user
+    print(current_user)
+    print(current_user.id)
+    obj = get_object_or_404(User, id=current_user.id)
+    print(obj)
+    form = FinalAddress(request.POST or None, instance=obj)
+    print(form)
+    context = {'form': form}
+    print(context)
+    if request.method == 'GET':
+        return render(request, 'ecomapp/final_address.html', context)
+    elif request.method == "POST":
+        # print("hereeeee post", data)
+        # User.objects.filter(id=request.POST)
+        if form.is_valid():
+            print("sucess")
+            form.save()
+            # return HttpResponse('success')
+        return render(request, 'ecomapp/final_address.html', context)
+
+
+def list_product_admin(request,pk):
+    user_product = User.objects.get(id=pk).product_set.all()
+    print(user_product)
+    return render(request, 'ecomapp/shopuser_list_admin.html', {'user_product': user_product})

@@ -1,0 +1,90 @@
+{% extends 'ecomapp/base.html' %}
+{% block body %}
+<script>
+     function myFunction()   {
+            let myform = document.getElementById("update_form");
+
+        var data = new FormData(myform)
+        console.log(data);
+        for (var key of data.entries()) {
+        console.log(key[0] + ', ' + key[1]);
+    }
+     var token = '{{csrf_token}}';
+   $.ajax(
+    {
+        type:"POST",
+        processData: false,
+        headers: { "X-CSRFToken": token },
+        url: `/ecom/final_address/`,
+        data: $(myform).serialize(),
+     }
+     )
+    }
+        function OrderplacedFunction(){
+        document.getElementById(`addToorder`).innerText = 'Order PLaced';
+
+   $.ajax(
+    {
+        type:"GET",
+        url: `/ecom/add_to_my_orders/`,
+        success: function( data )
+        {
+           console.log(data)
+           $("#update-form").empty()
+           $("#update-form").append(data)
+           $('#update_id').val(id)
+           location.reload()
+        }
+     }
+     )
+    }
+</script>
+
+{% if messages %}
+<div>
+    <strong>Messages:</strong>
+    <ul>
+        {% for message in messages %}
+        <li>{{message}}</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+<h1>Confirm your details</h1>
+<div class="container text-center">
+    <div class="row">
+        <div class="col">
+        </div>
+        <div class="alert alert-primary col-6">
+            <form method="post" action="" id="update_form">
+                {% csrf_token %}
+                <div class="form-group col-md">
+                    <label>Mobile Number</label>
+                    {{ form.mobile_no }}
+                </div>
+                <div class="form-group col-md">
+                    <label>Address</label>
+                    {{ form.addressof_customer}}
+                </div>
+                <h1></h1>
+                <a type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalLong"
+                   href="#" class="likebutton" id="like{{post.id}}" href="#" data-catid="{{ post.id }}"
+                   onclick="myFunction()">
+                    Change
+                </a>
+                <a type="button" class="btn btn-primary"
+                       href="#" class="likebutton" id="addToorder"  data-catid="{{ post.id }}"
+                       onclick="OrderplacedFunction()">
+                        Confirm
+                    </a>
+            </form>
+        </div>
+        <div class="col">
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+

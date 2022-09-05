@@ -37,7 +37,6 @@
      )
     }
 
-
      function remove_from_cart_function(id){
         document.getElementById(`removeTwishlist_${id}`).remove();
         console.log(id)
@@ -57,24 +56,24 @@
      )
     }
 
-    function OrderplacedFunction(){
-        document.getElementById(`addToorder`).innerText = 'Order PLaced';
+    function changeQuantityFunc(id){
+        console.log(id)
+        var quantity = $(`#quantity_${id}`).val()
+        console.log(quantity)
 
-   $.ajax(
+        $.ajax(
     {
         type:"GET",
-        url: `/ecom/add_to_my_orders/`,
+        url: `/ecom/update_order_quantity/${id}/${quantity}/`,
         success: function( data )
         {
            console.log(data)
-           $("#update-form").empty()
-           $("#update-form").append(data)
-           $('#update_id').val(id)
-           location.reload()
+        //    location.reload()
         }
      }
      )
     }
+
 
 
 
@@ -86,8 +85,10 @@
     <tr>
         <th>Type</th>
         <th>Name</th>
-        <th>Size</th>
+        <!-- <th>Size</th> -->
         <th>Gender</th>
+        <th>Color</th>
+        <th>Size</th>
         <th>Image</th>
         <th></th>
     </tr>
@@ -98,8 +99,20 @@
     <tr id="removeTwishlist_{{item.id}}">
         <td>{{ item.product.product_type }}</td>
         <td>{{ item.product.product_name }}</td>
-        <td>{{ item.product.product_size }}</td>
+        <!-- <td>{{ item.product.product_size }}</td> -->
         <td>{{ item.product.gender }}</td>
+        <td>{{item.color}}</td>
+        <td>{{item.size}}</td>
+        <td><select class="form-select" aria-label="Disabled select example" name="cars" id="quantity_{{item.id}}" onchange="changeQuantityFunc('{{item.id}}')">
+                    <option value="1" class="">1</option>
+                    <option value="2" class="">2</option>
+                    <option value="3" class="">3</option>
+                    <option value="4" class="">4</option>
+                    <option value="5" class="">5</option>
+                    <option value="6" class="">6</option>
+                    <option value="7" class="">7</option>
+                </select>
+        </td>
         <td><img src="{{ item.product.product_img.url }}" height="200px" width="200px"></td>
         <td><a type="button" class="btn btn-primary"
                href="#" onclick="remove_from_cart_function('{{item.id}}')">
@@ -130,10 +143,12 @@
             <div class="modal-body">
                 <table class="table table-bordered">
                     <thead class="alert-warning">
-                    <tr>
-                        <th>Type</th>
+                    <tr></tr>
                         <th>Name</th>
                         <th>Size</th>
+                        <th>Gender</th>
+                        <th>Color</th>
+
                         <th>Price</th>
                     </tr>
                     </thead>
@@ -141,19 +156,20 @@
                     {% for item in data %}
                     <tr>
                         <td>{{ item.product.product_name }}</td>
-                        <td>{{ item.product.product_size }}</td>
+                        <td>{{ item.size }}</td>
                         <td>{{ item.product.gender }}</td>
+                        <td>{{ item.color }}</td>
                         <td>{{ item.product.price }}</td>
                     </tr>
                     {% endfor %}
                     </tbody>
                 </table>
                 <p>Total amount to be paid = <span style="color:blue">{{ product__price }}</span></p>
+
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
                     <a type="button" class="btn btn-primary"
-                       href="#" class="likebutton" id="addToorder"  data-catid="{{ post.id }}"
-                       onclick="OrderplacedFunction()">
+                       href="{% url 'ecomapp:final_address' %}" class="likebutton" >
                         Confirm
                     </a>
                 </div>

@@ -40,15 +40,12 @@
     </div>
     {% endif %}
 <h1></h1>
-
+    <h1>Total Sell : <span style="color:red">{{ total_product_sell }}% </span></h1>
 
 <!--     <li class="btn btn-info"><a style="color: black; text-decoration: none" href="{% url 'ecomapp:shop_list' %}">Add Product</a></li>-->
      <li class="btn btn-info"><a style="color: black; text-decoration: none" href="{% url 'ecomapp:add_product' %}">Add Product</a></li>
     <li class="btn btn-info"><a style="color: black; text-decoration: none" href="{% url 'ecomapp:list_product' %}">List Product</a></li>
-
-
-
-
+    <li class="btn btn-info"><a style="color: black; text-decoration: none" href="{% url 'ecomapp:shop_orders' %}">Order Received</a></li>
     {% block content %}
     {% endblock %}
     {% endblock %}

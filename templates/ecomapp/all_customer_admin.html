@@ -1,0 +1,30 @@
+<div>
+    <div class="modal-footer">
+         <table class="table table-bordered">
+                    <thead class="alert-warning">
+                    <tr></tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Mobile</th>
+                    <th>Address</th>
+                    <th>Gender</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for item in all_customers %}
+                    <tr>
+                        <td>{{ item.username }}</td>
+                        <td>{{ item.email }}</td>
+                        <td>{{ item.mobile_no }}</td>
+                        <td>{{ item.addressof_customer }}</td>
+                        <td>{{ item.gender }}</td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+         <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                </div>
+    </div>
+</div>
+

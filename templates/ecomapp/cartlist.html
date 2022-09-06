@@ -28,7 +28,7 @@
         url: `/ecom/gotocart/`,
         success: function( data )
         {
-           console.log(data)
+           console.log("html", data)
            $("#update-form").empty()
            $("#update-form").append(data)
            $('#update_id').val(id)
@@ -148,7 +148,6 @@
                         <th>Size</th>
                         <th>Gender</th>
                         <th>Color</th>
-
                         <th>Price</th>
                     </tr>
                     </thead>
@@ -165,7 +164,6 @@
                     </tbody>
                 </table>
                 <p>Total amount to be paid = <span style="color:blue">{{ product__price }}</span></p>
-
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
                     <a type="button" class="btn btn-primary"

@@ -36,5 +36,9 @@ urlpatterns = [
     path('shop_orders/', views.shop_orders, name="shop_orders"),
 
     path('final_address/', views.final_address, name="final_address"),
-    path('list_product_admin/<str:pk>/',views.list_product_admin, name='list_product_admin')
+    path('list_product_admin/<str:pk>/', views.list_product_admin, name='list_product_admin'),
+    path('shop_orders_admin/<str:pk>/', views.shop_orders_admin, name='shop_orders_admin'),
+    path('all_customers_admin/', views.all_customers_admin, name='all_customers_admin'),
+    path('go_to_your_order_admin/<str:pk>/', views.go_to_your_order_admin, name='go_to_your_order_admin'),
+    path('product_sales/<str:pk>/<str:pk1>/', views.product_sales, name='product_sales')
 ]

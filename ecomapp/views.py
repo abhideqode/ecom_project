@@ -2,6 +2,8 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
+from django.http import JsonResponse
+
 from django.views.generic import UpdateView
 
 from .models import User, Product, Wishlist, WishItems, CartItems, MyOrders
@@ -230,11 +232,11 @@ def addtocart(request, pk, size, color):
     print(CartItems.objects.filter(wishlist_id=wishlist.id).exists())
     products = Product.objects.get(id=pk)
     print(products)
-    # if CartItems.objects.filter(wishlist_id=wishlist.id).exists() and CartItems.objects.filter(product_id=pk).exists():
-    #     print("Items if")
-    #     CartItems.objects.filter(product_id=pk).update(color=color,size=size)
-    #     return HttpResponse("Addedd")
-    # else:
+
+    # if CartItems.objects.filter(wishlist_id=wishlist.id).exists() and CartItems.objects.filter(
+    # product_id=pk).exists(): print("Items if") CartItems.objects.filter(product_id=pk).update(color=color,
+    # size=size) return HttpResponse("Addedd")
+
     cartitem = CartItems(wishlist=wishlist, product=products, color=color, size=size)
     cartitem.save()
     print(cartitem)
@@ -345,7 +347,48 @@ def final_address(request):
         return render(request, 'ecomapp/final_address.html', context)
 
 
-def list_product_admin(request,pk):
+def list_product_admin(request, pk):
     user_product = User.objects.get(id=pk).product_set.all()
     print(user_product)
-    return render(request, 'ecomapp/shopuser_list_admin.html', {'user_product': user_product})
+    return render(request, 'ecomapp/shopuser_list_admin.html', {'user_product': user_product, 'id': pk})
+
+
+def shop_orders_admin(request, pk):
+    # current_shop = request.user
+    products = MyOrders.objects.filter(user_id=pk)
+    print(products)
+    # print(products[0].wishlist.user.username)
+    return render(request, 'ecomapp/shop_orders.html', {'products': products})
+
+
+@login_required
+def all_customers_admin(request):
+    c = request.user
+    print("all customers")
+    if c.user_type == 'admin':
+        print("dffdd")
+        all_customers = User.objects.filter(user_type='customer')
+        print(all_customers)
+        return render(request, 'ecomapp/all_customer_admin.html', {'all_customers': all_customers})
+    return HttpResponse("Login Required")
+
+
+def go_to_your_order_admin(request, pk):
+    myorder = User.objects.get(id=pk).wishlist.myorders_set.all()
+    return render(request, 'ecomapp/myorders_page.html', {'myorder': myorder})
+
+
+def product_sales(request, pk, pk1):
+    # import pdb;pdb.set_trace()
+    print(pk)
+    print(pk1)
+    total_shell_product = User.objects.get(id=pk1).product_set.filter(id=pk).aggregate(Sum('quantity'))
+    print(total_shell_product)
+    total_order_recieved = MyOrders.objects.filter(product_id=pk).aggregate(Sum('quantity'))
+    print(total_order_recieved)
+    if total_order_recieved['quantity__sum'] is None:
+        total_product_sell = 0
+    else:
+        total_product_sell = (total_order_recieved['quantity__sum'] / total_shell_product['quantity__sum']) * 100
+    print(total_product_sell)
+    return JsonResponse({'total_product_sell':total_product_sell})

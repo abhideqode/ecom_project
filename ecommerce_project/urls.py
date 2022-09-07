@@ -17,16 +17,16 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-import ecomapp.views
+# import ecomapp.views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('allauth.urls')),
     # path('',ecomapp.views.test),
-    path('ecom/',include('ecomapp.urls'))
+    path('ecom/', include('ecomapp.urls'))
 ]
 
-urlpatterns += static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 #
 # path('admin/', admin.site.urls),
 # path('accounts/', include('allauth.urls')),

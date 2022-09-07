@@ -1,6 +1,6 @@
-from django.db.models.signals import post_save, pre_delete, pre_save
-from .models import User
-from django.dispatch import receiver
+# from django.db.models.signals import post_save, pre_delete, pre_save
+# from .models import User
+# from django.dispatch import receiver
 
 
 # @receiver(pre_save, sender=User)

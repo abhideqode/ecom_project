@@ -5,16 +5,16 @@
      function remove_from_wishlist_function(id){
      document.getElementById(`removeTwishlist_${id}`).remove();
         console.log(id)
+        var token = '{{csrf_token}}';
    $.ajax(
     {
-        type:"GET",
-        url: `/ecomremovefromwishlist/${id}/`,
+        type:"POST",
+        url: `/ecom/removefromwishlist/${id}/`,
+        headers: { "X-CSRFToken": token },
         success: function( data )
         {
            console.log(data)
-           $("#update-form").empty()
-           $("#update-form").append(data)
-           $('#update_id').val(id)
+
         }
      }
      )
@@ -40,7 +40,7 @@
     </tr>
     </thead>
     <tbody>
-    {% for item in data %}
+    {% for item in object_list %}
 
     <tr id="removeTwishlist_{{item.id}}">
         <td>{{ item.product.product_type }}</td>
@@ -48,10 +48,14 @@
         <td>{{ item.product.product_size }}</td>
         <td>{{ item.product.gender }}</td>
         <td><img src="{{ item.product.product_img.url }}" height="200px" width="200px"></td>
+        <form method="post">
+            {% csrf_token %}
         <td><a type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalLong"
                href="#"  onclick="remove_from_wishlist_function('{{item.id}}')">
             Remove from Wishlist
-        </a></td>
+        </a>
+        </td>
+            </form>
     </tr>
     {% endfor %}
     </tbody>

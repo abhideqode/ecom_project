@@ -14,9 +14,9 @@
     <div class="col">
     </div>
     <div class="col-6">
-        <h6>username: {{ username }}</h6>
-      <h6>Email: {{ email }}</h6>
-      <h6>name: {{ name }}</h6>
+        <h6>username: {{ shopuser.username }}</h6>
+      <h6>Email: {{ shopuser.email }}</h6>
+      <h6>name: {{ shopuser.first_name }}</h6>
        <div>
            <form method="post" action="">
                {% csrf_token %}

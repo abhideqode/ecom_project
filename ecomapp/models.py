@@ -154,7 +154,7 @@ class MyOrders(models.Model):
 
 
 @receiver(post_save, sender=User)
-def create_profile(instance, created):
+def create_profile(sender,instance, created,**kwargs):
     """
         this is the signals which is used for the post save of user models
     """

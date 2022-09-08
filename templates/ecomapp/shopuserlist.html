@@ -102,34 +102,34 @@
 <div><h1></h1></div>
 <div class="container">
     <div class="row">
-        {% for i in context %}
+        {% for shopusers in shop_user_list %}
         <div class="col-4 card " style="width: 18rem;">
-            <h6>{{ i.first_name }}</h6>
-            <h6>{{ i.username }}</h6>
-            <h6>{{ i.email }}</h6>
+            <h6>{{ shopusers.first_name }}</h6>
+            <h6>{{ shopusers.username }}</h6>
+            <h6>{{ shopusers.email }}</h6>
             <div class="row">
                 <div class="col"><a type="button" class="btn btn-danger" data-toggle="modal"
                                     data-target="#exampleModalLong1"
                                     href="#" class="likebutton1" href="#" data-catid="{{ post.id }}"
-                                    onclick="delete_function_set_id('{{i.id}}')">
+                                    onclick="delete_function_set_id('{{shopusers.id}}')">
                     delete
                 </a></div>
                 <div class="col">
                     <a type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalLong"
                        href="#" class="likebutton" id="like{{post.id}}" href="#" data-catid="{{ post.id }}"
-                       onclick="myFunction('{{i.id}}')">
+                       onclick="myFunction('{{shopusers.id}}')">
                         update
                     </a>
                 </div>
                 <div class="col">
                     <a type="button" class="btn btn-link"
-                       href="{% url 'ecomapp:list_product_admin' i.id %}">
+                       href="{% url 'ecomapp:list_product_admin' shopusers.id %}">
                         Products
                     </a>
                 </div>
                  <div class="col">
                     <a type="button" class="btn btn-link"
-                       href="{% url 'ecomapp:shop_orders_admin' i.id %}">
+                       href="{% url 'ecomapp:shop_orders_admin' shopusers.id %}">
                         Orders
                     </a>
                 </div>
@@ -179,7 +179,7 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     <button type="button" id="modal-delete-button" class="btn btn-primary"
-                            onclick="myDelete('{{i.id}}')">Delete
+                            onclick="myDelete('{{shopusers.id}}')">Delete
                     </button>
                 </div>
             </div>

@@ -4,9 +4,11 @@
 from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
 from django.http import HttpResponse
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
-
+from django.urls import reverse, reverse_lazy
+from django.views import View
+from django.views.generic import TemplateView, FormView, UpdateView, ListView, CreateView, DeleteView
 
 from .models import User, Product, Wishlist, WishItems, CartItems, MyOrders
 from .form import UpdateForm, CreatShopUser, Addproduct, ShopSignupForm, FinalAddress
@@ -42,47 +44,106 @@ def test(request):
         return render(request, 'ecomapp/customer.html', {'t': current_user, 'products': products})
 
 
-def newshop_user(request):
-    """
-        this contains new shop user in django
-        we can add data
-     """
-    form = ShopSignupForm(request.POST or None)
-    if form.is_valid():
-        form.save(request)
-        return render(request, 'account/account_inactive.html')
-    context = {'form': form}
-    return render(request, 'account/shop_user.html', context)
+class Test(ListView):
+    model = User
+
+    def get_template_names(self):
+
+        if self.request.user.user_type == 'admin':
+            return ['ecomapp/admin.html']
+        elif self.request.user.user_type == 'customer':
+            return ['ecomapp/customer.html']
+        else:
+            return ['ecomapp/shopuser.html']
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.user.user_type == 'customer':
+            context['products'] = Product.objects.all()
+        elif self.request.user.user_type == 'shopuser':
+            # breakpoint()
+            try:
+                total_sell_product = self.request.user.product_set.all().aggregate(Sum('quantity'))
+                total_recieved = MyOrders.objects.filter(user_id=self.request.user.id).aggregate(Sum('quantity'))
+                total_sell = (total_recieved['quantity__sum'] / total_sell_product['quantity__sum']) * 100
+            except TypeError:
+                total_sell = 0
+            context['total_product_sell'] = total_sell
+        return context
 
 
-def update_order(request, pk):
-    """
-        this contains update order
-        data
-    """
-    obj = get_object_or_404(User, id=pk)
-    print(obj)
-    form = UpdateForm(request.POST or None, instance=obj)
-    context = {'form': form}
-    print(context)
-    if request.method == 'GET':
-        return render(request, 'ecomapp/update.html', context)
-    elif request.method == "POST":
-        # print("hereeeee post", data)
-        # User.objects.filter(id=request.POST)
+# def newshop_user(request):
+#     """
+#         this contains new shop user in django
+#         we can add data
+#      """
+#     form = ShopSignupForm(request.POST or None)
+#     if form.is_valid():
+#         form.save(request)
+#         return render(request, 'account/account_inactive.html')
+#     context = {'form': form}
+#     return render(request, 'account/shop_user.html', context)
+
+
+class NewShopUser(View):
+    def get(self, request):
+        form = ShopSignupForm()
+        context = {'form': form}
+        return render(request, 'account/shop_user.html', context)
+
+    def post(self, request):
+        form = ShopSignupForm(request.POST or None)
         if form.is_valid():
             print("sucess")
             form.save()
-            # return HttpResponse('success')
+        return render(request, 'account/account_inactive.html')
+
+
+# def update_order(request, pk):
+#     """
+#         this contains update order
+#         data
+#     """
+#     obj = get_object_or_404(User, id=pk)
+#     print(obj)
+#     form = UpdateForm(request.POST or None, instance=obj)
+#     context = {'form': form}
+#     print(context)
+#     if request.method == 'GET':
+#         return render(request, 'ecomapp/update.html', context)
+#     elif request.method == "POST":
+#         # print("hereeeee post", data)
+#         # User.objects.filter(id=request.POST)
+#         if form.is_valid():
+#             print("sucess")
+#             form.save()
+#             # return HttpResponse('success')
+#         return render(request, 'ecomapp/update.html', context)
+#         form = UpdateForm(instance=order)
+#     print(form)
+#     if request.method == 'POST':
+#         print("post")
+#         form = UpdateForm(request.POST, order)
+#
+#     print("get")
+#     return render(request, 'ecomapp/update.html', context)
+
+class UpdateOrder(View):
+    def get(self, request, pk):
+        obj = get_object_or_404(User, id=pk)
+        print(obj)
+        form = UpdateForm(instance=obj)
+        context = {'form': form}
         return render(request, 'ecomapp/update.html', context)
-        # form = UpdateForm(instance=order)
-    # print(form)
-    # if request.method == 'POST':
-    #     print("post")
-    #     form = UpdateForm(request.POST, order)
-    #
-    # print("get")
-    # return render(request, 'ecomapp/update.html', context)
+
+    def post(self, request, pk):
+        obj = get_object_or_404(User, id=pk)
+        print(obj)
+        form = UpdateForm(request.POST or None, instance=obj)
+        if form.is_valid():
+            print("sucess")
+            form.save()
+        return HttpResponse('success')
 
 
 def shop_user(request):
@@ -118,6 +179,25 @@ def shopuser_app(request, pk):
     return render(request, 'ecomapp/userrequest.html', context)
 
 
+class ShopUserRequest(TemplateView):
+    template_name = 'ecomapp/userrequest.html'
+
+    def post(self, request, **kwargs):
+        shopuser = User.objects.get(id=kwargs['pk'])
+        if 'approve' in request.POST:
+            print("approve")
+        elif 'reject' in request.POST:
+            print('reject')
+        return HttpResponse('success')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        print(kwargs)
+        context['shopuser'] = User.objects.get(id=kwargs['pk'])
+        print(context['shopuser'].email)
+        return context
+
+
 def request_list(request):
     """
         this contains function request llist for users
@@ -136,8 +216,22 @@ def shop_list(request):
     current_user = request.user
     if current_user.user_type == 'admin':
         shop_user_list = User.objects.filter(is_active=True, user_type='shopuser')
-        return render(request, 'ecomapp/shopuserlist.html', {'context': shop_user_list})
+        return render(request, 'ecomapp/shopuserlist.html', {'shop_user_list': shop_user_list})
     return HttpResponse("Login Required")
+
+
+class ShopList(ListView):
+    model = User
+    template_name = 'ecomapp/shopuserlist.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.user.user_type == 'admin':
+            context['shop_user_list'] = User.objects.filter(is_active=True, user_type='shopuser')
+            context = {'shop_user_list': context['shop_user_list']}
+            print(context)
+            return context
+        return HttpResponse('Login Required')
 
 
 def create_shopuser(request):
@@ -162,8 +256,17 @@ def create_shopuser(request):
         # if a GET (or any other method) we'll create a blank form
     else:
         form = CreatShopUser()
-
     return render(request, 'ecomapp/createshopuser.html', {'form': form})
+
+
+class CreateShopUser(CreateView):
+    # specify the model for create view
+    model = User
+    form_class = CreatShopUser
+    template_name = 'ecomapp/createshopuser.html'
+
+    def get_success_url(self):
+        return reverse('ecomapp:ecomdash')
 
 
 def add_product(request):
@@ -184,6 +287,23 @@ def add_product(request):
     return render(request, 'ecomapp/addproduct.html', {'form': form})
 
 
+class AddProduct(View):
+    def get(self, request):
+        form = Addproduct()
+        context = {'form': form}
+        return render(request, 'ecomapp/addproduct.html', context)
+
+    def post(self, request):
+        form = Addproduct(request.POST or None, request.FILES)
+        if form.is_valid():
+            addproduct_obj = form.save(commit=False)
+            print(addproduct_obj)
+            addproduct_obj.user = request.user
+            addproduct_obj.save()
+            print("sucess")
+        return HttpResponse('success')
+
+
 @login_required
 def list_product(request):
     """
@@ -191,19 +311,36 @@ def list_product(request):
     """
     current_user = request.user
     user_product = current_user.product_set.all()
-    return render(request, 'ecomapp/product_list.html', {'context': user_product})
+    return render(request, 'ecomapp/product_list.html', {'user_product': user_product})
 
 
-def shop_delete(request, pk):
-    """
-        this contains function shop delete
-    """
-    print(pk)
-    user_objects = User.objects.get(id=pk)
-    print(user_objects)
-    user_objects.delete()
-    print('success')
-    return HttpResponse('successfully deleted')
+class ListProduct(ListView):
+    # specify the model for list view
+    model = Product
+    template_name = 'ecomapp/product_list.html'
+
+    def get_queryset(self, *args, **kwargs):
+        # context = super(ListProduct, self).get_queryset(*args, **kwargs)
+        return self.request.user.product_set.all()
+
+
+# def shop_delete(request, pk):
+#     """
+#         this contains function shop delete
+#     """
+#     print(pk)
+#     user_objects = User.objects.get(id=pk)
+#     print(user_objects)
+#     user_objects.delete()
+#     print('success')
+#     return HttpResponse('successfully deleted')
+
+
+class ShopProductDelete(DeleteView):
+    model = User
+
+    def get_success_url(self):
+        return reverse('ecomapp:ecomdash')
 
 
 def product_delete(request, pk):
@@ -216,6 +353,12 @@ def product_delete(request, pk):
     user_objects.delete()
     print('success')
     return HttpResponse('successfully deleted')
+
+
+class ProductDelete(DeleteView):
+    print("delete-product")
+    model = Product
+    success_url = '/listproduct/'
 
 
 @login_required
@@ -243,6 +386,24 @@ def update_product(request, pk):
     context = {'form': form}
     print("get")
     return render(request, 'ecomapp/product_update.html', context)
+
+
+class UpdateProduct(View):
+    def get(self, request, pk):
+        obj = get_object_or_404(Product, id=pk)
+        print(obj)
+        form = Addproduct(instance=obj)
+        context = {'form': form}
+        return render(request, 'ecomapp/product_update.html', context)
+
+    def post(self, request, pk):
+        obj = get_object_or_404(Product, id=pk)
+        print(obj)
+        form = Addproduct(request.POST or None, instance=obj)
+        if form.is_valid():
+            print("sucess")
+            form.save()
+        return HttpResponse('success')
 
 
 @login_required
@@ -306,6 +467,16 @@ def go_to_wishlist(request):
     return render(request, 'ecomapp/wishlist.html', {'data': data})
 
 
+class GoToWishlist(ListView):
+    # specify the model for list view
+    model = WishItems
+    template_name = 'ecomapp/wishlist.html'
+
+    def get_queryset(self, *args, **kwargs):
+        # context = super(ListProduct, self).get_queryset(*args, **kwargs)
+        return self.request.user.wishlist.wishitems_set.all()
+
+
 @login_required
 def go_to_cart(request):
     """
@@ -328,9 +499,15 @@ def remove_from_wishlist_function(request, pk):
     """
     print(pk)
     print(WishItems)
-    WishItems.objects.filter(id=pk).delete()
+
     print(WishItems)
-    return HttpResponse("Addedd")
+
+
+class RemoveProductWishlist(View):
+
+    def post(self, request, pk):
+        WishItems.objects.filter(id=pk).delete()
+        return HttpResponse("Addedd")
 
 
 def remove_from_cart_function(request, pk):

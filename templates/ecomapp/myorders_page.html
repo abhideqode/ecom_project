@@ -59,10 +59,12 @@
      function remove_from_order(id){
         // document.getElementById(`removeTwishlist_${id}`).remove();
         console.log(id)
+        var token = '{{csrf_token}}';
    $.ajax(
     {
-        type:"GET",
+        type:"POST",
         url: `/ecom/remove_from_order/${id}/`,
+        headers: { "X-CSRFToken": token },
         success: function( data )
         {
            console.log(data)
@@ -85,7 +87,7 @@
     </a>
 </div>
 <div class="d-flex justify-content-around">
-    {% for item in myorder %}
+    {% for item in object_list %}
     <div class="d-inline-flex p-2 bd-highlight">
         <div class="card" style="width: 18rem;">
             <img src="{{ item.product_img.url }}" height="200px" width="280px">
@@ -103,11 +105,14 @@
                    onclick="myBuyFunction('{{item.id}}')">
                     Cancel
                 </a>
+              <form method="post">
+            {% csrf_token %}
                 <a type="button" class="btn btn-primary"
                    href="#" class="likebutton" id="addToorder"  data-catid="{{ post.id }}"
                    onclick="remove_from_order('{{item.id}}')">
                     delete
                 </a>
+              </form>
             </div>
         </div>
     </div>

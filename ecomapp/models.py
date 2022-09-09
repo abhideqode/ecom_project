@@ -176,7 +176,7 @@ def create_profile(sender,instance, created,**kwargs):
         # print(instance.__dict__)
         # print(instance.is_active)
         if not instance.is_active:
-            approveurl = "http://127.0.0.1:8000/ecomapprove/" + str(instance.id) + "/"
+            approveurl = "http://127.0.0.1:8000/ecom/approve/" + str(instance.id) + "/"
             context = (
                 {'id': instance.id, 'Username': instance.username,
                  'Firstname': instance.first_name, 'url': approveurl})

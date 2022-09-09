@@ -5,9 +5,11 @@
      function add_to_wishlist_function(id)   {
      document.getElementById(`addTwishlist_${id}`).innerText = 'Added';
         console.log(id)
+        var token = '{{csrf_token}}';
    $.ajax(
     {
-        type:"GET",
+        type:"POST",
+        headers: { "X-CSRFToken": token },
         url: `/ecom/addtowishlist/${id}/`,
         success: function( data )
         {
@@ -26,9 +28,11 @@
      var size = $(`#size_${id}`).val()
         console.log(id)
         console.log(color)
+        var token = '{{csrf_token}}';
    $.ajax(
     {
-        type:"GET",
+        type:"POST",
+        headers: { "X-CSRFToken": token },
         url: `/ecom/addtocart/${id}/${color}/${size}/`,
         success: function( data )
         {
@@ -89,18 +93,22 @@
         <td><img src="{{ item.product_img.url }}" height="200px" width="200px"></td>
         <td>
             <ul style="list-style-type: none;">
-                <li style="margin: 12px;"><a type="button" class="btn btn-primary" data-toggle="modal"
+                <li style="margin: 12px;">
+                    <form method="post">
+                        {% csrf_token %}<a type="button" class="btn btn-primary" data-toggle="modal"
                                              data-target="#exampleModalLong"
                                              href="#" id="addTwishlist_{{item.id}}"
                                              onclick="add_to_wishlist_function('{{item.id}}')">
                     Add to Wishlist
-                </a></li>
-                <li style="margin: 12px;"><a type="button" class="btn btn-primary" data-toggle="modal"
+                    </a></form></li>
+                <li style="margin: 12px;">
+                     <form method="post">
+                        {% csrf_token %}<a type="button" class="btn btn-primary" data-toggle="modal"
                                              data-target="#exampleModalLong"
                                              href="#" id="addTocart_{{item.id}}"
                                              onclick="add_to_cart_function('{{item.id}}')">
                     Add to Cart
-                </a></li>
+                     </a></form></li>
             </ul>
         </td>
     </tr>

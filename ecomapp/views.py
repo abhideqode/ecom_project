@@ -9,7 +9,6 @@ from django.http import JsonResponse
 from django.urls import reverse, reverse_lazy
 from django.views import View
 from django.views.generic import TemplateView, ListView, CreateView, DeleteView
-
 from .models import User, Product, Wishlist, WishItems, CartItems, MyOrders
 from .form import UpdateForm, CreatShopUser, Addproduct, ShopSignupForm, FinalAddress
 
@@ -52,7 +51,6 @@ class Test(ListView):
     model = User
 
     def get_template_names(self):
-
         if self.request.user.user_type == 'admin':
             return ['ecomapp/admin.html']
         elif self.request.user.user_type == 'customer':
@@ -68,7 +66,7 @@ class Test(ListView):
             # breakpoint()
             try:
                 total_sell_product = self.request.user.product_set.all().aggregate(Sum('quantity'))
-                total_recieved = MyOrders.objects.filter(user_id=self.request.user.id)\
+                total_recieved = MyOrders.objects.filter(user_id=self.request.user.id) \
                     .aggregate(Sum('quantity'))
                 total_sell = (total_recieved['quantity__sum'] / total_sell_product['quantity__sum']) * 100
             except TypeError:
@@ -95,6 +93,7 @@ class NewShopUser(View):
         this contains new shop user in django
         we can add data
     """
+
     def get(self, request):
         form = ShopSignupForm()
         context = {'form': form}
@@ -142,6 +141,7 @@ class UpdateOrder(View):
         this contains update order
         data
     """
+
     def get(self, request, pk):
         obj = get_object_or_404(User, id=pk)
         print(obj)
@@ -330,6 +330,7 @@ class AddProduct(View):
     """
         this contains function add products
     """
+
     def get(self, request):
         form = Addproduct()
         context = {'form': form}
@@ -443,6 +444,7 @@ class UpdateProduct(View):
     """
         this contains function update product details
     """
+
     def get(self, request, pk):
         obj = get_object_or_404(Product, id=pk)
         print(obj)
@@ -725,6 +727,7 @@ class RemoveProductFromOrder(View):
     """
         this contains function remove product from order list
     """
+
     def post(self, request, pk):
         MyOrders.objects.filter(id=pk).delete()
         return HttpResponse("Addedd")
@@ -745,6 +748,7 @@ class UpdateCartQuantity(View):
     """
         this contains function updates order quantity
     """
+
     def post(self, request, pk, quantity):
         CartItems.objects.filter(id=pk).update(quantity=quantity)
         return HttpResponse("Addedd")
@@ -811,6 +815,7 @@ class FinalAddressDetails(View):
     """
         this contains function final address to the customer were we can deliver
     """
+
     def get(self, request):
         obj = get_object_or_404(User, id=self.request.user.id)
         print(obj)

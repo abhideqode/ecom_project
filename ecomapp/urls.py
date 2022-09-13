@@ -24,17 +24,14 @@ urlpatterns = [
     # path('removefromwishlist/<str:pk>/', views.remove_from_wishlist_function,
     #      name="remove_from_wishlist_function"),
     # path('filter/', views.filter, name="filter_product"),
-
     # path('shop_user/', views.newshop_user, name="shopuser_url"),
     # path('addtocart/<str:pk>/<str:color>/<str:size>/', views.add_to_cart, name="add_to_cart"),
     # path('gotocart/', views.go_to_cart, name="go_to_cart"),
     # path('removefromcart/<str:pk>/', views.remove_from_cart_function,
     #      name="remove_from_wishlist_function"),
-
     # Myorders fuctions
     path('add_to_my_orders/', views.add_to_my_orders, name="add_to_myorders"),
     # path('go_to_your_order/', views.go_to_your_order, name="go_to_your_order"),
-
     # path('remove_from_order/<str:pk>/', views.remove_from_order, name="remove_from_order"),
     # path('update_order_quantity/<str:pk>/<str:quantity>/',
     #      views.update_order_quantity, name="update_order_quantity"),

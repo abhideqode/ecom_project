@@ -22,9 +22,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-&$vl@6+k=k#5vsa+43yzsh8z(rlz^ubarq376fg9qa#fukk%9p'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['abhijeet-ecommerce.herokuapp.com', '127.0.0.1']
 
 # Application definition
 
@@ -46,6 +46,8 @@ SITE_ID = 1
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -158,6 +160,9 @@ EMAIL_USE_TLS = True
 LOGIN_REDIRECT_URL = '/ecom/dashboard'
 LOGOUT_REDIRECT_URL = '/accounts/login/'
 MEDIA_URL = '/images/'
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static')
 ]

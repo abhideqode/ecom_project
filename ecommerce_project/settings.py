@@ -46,6 +46,7 @@ SITE_ID = 1
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -158,6 +159,9 @@ EMAIL_USE_TLS = True
 LOGIN_REDIRECT_URL = '/ecom/dashboard'
 LOGOUT_REDIRECT_URL = '/accounts/login/'
 MEDIA_URL = '/images/'
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static')
 ]
